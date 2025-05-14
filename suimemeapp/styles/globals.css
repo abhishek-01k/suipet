@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  .dark {
+    --background: #070707;
+    --foreground: #ffffff;
+  }
+
+  /* The font weight at here is following the figma design */
+  * {
+    @apply m-0 box-border p-0;
+  }
+
+  body {
+    @apply bg-black text-foreground;
+  }
+}
+
+@layer utilities {
+
+  .button-animate-110 {
+    @apply duration-300 ease-in-out hover:scale-110 active:scale-90;
+  }
+
+  .button-animate-105 {
+    @apply duration-300 ease-in-out hover:scale-105 active:scale-95;
+  }
+
+  .Toastify__toast {
+    background-color: #141b1d;
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* NeoBrutalism Styles */
+.neo-brutalism-shadow {
+  box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.8);
+  border: 2px solid black;
+  transition: all 0.2s ease;
+}
+
+.neo-brutalism-shadow:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0px 0px rgba(0, 0, 0, 0.8);
+}
+
+.neo-btn {
+  position: relative;
+  transition: all 0.2s ease;
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
+  border: 2px solid black;
+}
+
+.neo-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.8);
+}
+
+.neo-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.8);
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Gradient Backgrounds */
+.bg-gradient-purple {
+  background: linear-gradient(to right, #9333ea, #4f46e5);
+}
+
+.bg-gradient-blue {
+  background: linear-gradient(to right, #0ea5e9, #2563eb);
+}
+
+.bg-gradient-green {
+  background: linear-gradient(to right, #10b981, #059669);
+}
+
+.bg-gradient-yellow {
+  background: linear-gradient(to right, #f59e0b, #d97706);
+}
+
+.bg-gradient-red {
+  background: linear-gradient(to right, #ef4444, #b91c1c);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Pet Card Animation */
+.pet-card {
+  transition: all 0.3s ease;
+}
+
+.pet-card:hover {
+  transform: translateY(-10px);
+}
+
+/* Progress Bar Animation */
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+}
+
+.animate-progress {
+  animation: progress 1s ease-out forwards;
+}
+
+/* Loading Animation */
+.loading-dot {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}

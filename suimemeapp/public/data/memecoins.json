@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Dogecoin",
+    "symbol": "DOGE",
+    "address": "0x1234567890abcdef1234567890abcdef",
+    "image": "/sample/doge.png",
+    "description": "The original meme coin featuring the Shiba Inu dog.",
+    "personality": {
+      "traits": ["playful", "curious", "friendly"],
+      "catchphrase": "Much wow! Very coin!"
+    }
+  },
+  {
+    "name": "Shiba Inu",
+    "symbol": "SHIB",
+    "address": "0xabcdef1234567890abcdef1234567890",
+    "image": "/sample/shib.png",
+    "description": "A decentralized meme token that evolved into a vibrant ecosystem.",
+    "personality": {
+      "traits": ["loyal", "energetic", "determined"],
+      "catchphrase": "Woof! To the moon!"
+    }
+  },
+  {
+    "name": "Pepe",
+    "symbol": "PEPE",
+    "address": "0x7890abcdef1234567890abcdef123456",
+    "image": "/sample/pepe.png",
+    "description": "A memecoin inspired by the famous frog meme.",
+    "personality": {
+      "traits": ["sarcastic", "wise", "unpredictable"],
+      "catchphrase": "Feels good man."
+    }
+  },
+  {
+    "name": "Floki",
+    "symbol": "FLOKI",
+    "address": "0xdef1234567890abcdef1234567890abc",
+    "image": "/sample/floki.png",
+    "description": "Named after Elon Musk's dog, a versatile meme token.",
+    "personality": {
+      "traits": ["brave", "adventurous", "smart"],
+      "catchphrase": "Together we're strong as Vikings!"
+    }
+  },
+  {
+    "name": "Bonk",
+    "symbol": "BONK",
+    "address": "0x567890abcdef1234567890abcdef1234",
+    "image": "/sample/bonk.png",
+    "description": "The first dog-themed memecoin on Solana.",
+    "personality": {
+      "traits": ["playful", "enthusiastic", "chaotic"],
+      "catchphrase": "BONK all the things!"
+    }
+  },
+  {
+    "name": "Unicat",
+    "symbol": "UCAT",
+    "address": "0x34567890abcdef1234567890abcdef12",
+    "image": "/sample/unicat.png",
+    "description": "Half unicorn, half cat, all magic.",
+    "personality": {
+      "traits": ["magical", "mysterious", "elegant"],
+      "catchphrase": "Meowgical powers, activate!"
+    }
+  }
+] 
