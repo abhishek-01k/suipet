@@ -26,39 +26,39 @@ const Header = () => {
         {/* Logo Link */}
         <div className="flex items-center gap-2">
           <Link href="/">
-            <Image 
-              src="/logo.png" 
-              alt="MemePet Logo" 
-              width={50} 
+            <Image
+              src="/pets/pet_logo.webp"
+              alt="MemePet Logo"
+              width={50}
               height={50}
-              className="rounded-full border-2 border-black"
+              className="rounded-full"
             />
           </Link>
           <h1 className="text-2xl font-bold text-white">MemePet</h1>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <Link href="/pets" className="text-white hover:underline">My Pets</Link>
           <Link href="/marketplace" className="text-white hover:underline">Marketplace</Link>
           {walletAddress ? (
-          <ConnectMenu walletAddress={walletAddress} suiName={suiName} />
-        ) : (
-          <ConnectModal
-            trigger={
-              <button
-                className="h-full rounded-[11px] outline-none ring-0 xl:button-animate-105 overflow-hidden p-[1px]"
-                disabled={!!walletAddress}
-              >
-                <div className="h-full px-5 py-4 flex items-center gap-2 rounded-xl bg-white/10">
-                  <span className="text-sm">
-                    {walletAddress ? "Connected" : "Connect Wallet"}
-                  </span>
-                  <LinkIcon size={17} className="text-white" />
-                </div>
-              </button>
-            }
-          />
-        )}
+            <ConnectMenu walletAddress={walletAddress} suiName={suiName} />
+          ) : (
+            <ConnectModal
+              trigger={
+                <button
+                  className="h-full rounded-[11px] outline-none ring-0 xl:button-animate-105 overflow-hidden p-[1px]"
+                  disabled={!!walletAddress}
+                >
+                  <div className="h-full px-5 py-4 flex items-center gap-2 rounded-xl bg-white/10">
+                    <span className="text-sm">
+                      {walletAddress ? "Connected" : "Connect Wallet"}
+                    </span>
+                    <LinkIcon size={17} className="text-white" />
+                  </div>
+                </button>
+              }
+            />
+          )}
         </div>
 
       </header>
