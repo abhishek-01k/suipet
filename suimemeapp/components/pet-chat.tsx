@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/8bit/button';
-import { getAIResponse } from '@/lib/aiPersonality';
+import { getAIResponse, generatePetPersonality } from '@/lib/aiPersonality';
 
 interface Message {
   id: string;
@@ -31,7 +31,36 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [mood, setMood] = useState<'happy' | 'neutral' | 'excited'>('neutral');
+  const [suggestedResponses, setSuggestedResponses] = useState<string[]>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Generate suggested responses based on pet personality
+  useEffect(() => {
+    const personality = generatePetPersonality(petType, petMemecoin.symbol);
+    setSuggestedResponses([
+      `Tell me about ${petMemecoin.symbol}`,
+      `Can we go on a mission?`,
+      `What activities do you like?`,
+      `How can I help you level up?`
+    ]);
+  }, [petType, petMemecoin.symbol]);
+
+  // Update mood based on recent messages
+  useEffect(() => {
+    if (messages.length > 1) {
+      const lastPetMessage = [...messages].reverse().find(m => m.sender === 'pet');
+      if (lastPetMessage) {
+        if (lastPetMessage.content.includes('!')) {
+          setMood('excited');
+        } else if (lastPetMessage.content.includes('happy') || lastPetMessage.content.includes('love') || lastPetMessage.content.includes('play')) {
+          setMood('happy');
+        } else {
+          setMood('neutral');
+        }
+      }
+    }
+  }, [messages]);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -39,13 +68,13 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
   }, [messages]);
 
   // Handle sending a message
-  const handleSendMessage = async () => {
-    if (!input.trim()) return;
+  const handleSendMessage = async (messageText: string = input) => {
+    if (!messageText.trim()) return;
     
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: input,
+      content: messageText,
       sender: 'user',
       timestamp: Date.now()
     };
@@ -56,7 +85,7 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
     
     // Get AI response using the personality service
     setTimeout(() => {
-      const aiResponse = getAIResponse(petName, petType, petMemecoin.symbol, input);
+      const aiResponse = getAIResponse(petName, petType, petMemecoin.symbol, messageText);
       
       const petMessage: Message = {
         id: Date.now().toString(),
@@ -78,9 +107,26 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
     }
   };
 
+  // Render mood emoji
+  const renderMoodEmoji = () => {
+    switch (mood) {
+      case 'happy':
+        return '😊';
+      case 'excited':
+        return '🤩';
+      default:
+        return '😐';
+    }
+  };
+
   return (
     <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
-      <h3 className="text-xl font-bold mb-4">Chat with {petName}</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold">Chat with {petName}</h3>
+        <div className="bg-gray-100 px-3 py-1 rounded-full border-2 border-black">
+          Mood: {renderMoodEmoji()}
+        </div>
+      </div>
       
       <div className="border-2 border-gray-300 rounded-lg bg-gray-50 h-64 flex flex-col">
         <div className="flex-1 overflow-y-auto p-4">
@@ -119,6 +165,19 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
           <div ref={chatEndRef} />
         </div>
         
+        {/* Suggested responses */}
+        <div className="px-3 py-2 border-t-2 border-gray-300 flex flex-wrap gap-2">
+          {suggestedResponses.map((response, index) => (
+            <button
+              key={index}
+              onClick={() => handleSendMessage(response)}
+              className="bg-gray-100 text-sm border-2 border-gray-300 rounded-full px-3 py-1 hover:bg-gray-200 hover:border-gray-400"
+            >
+              {response}
+            </button>
+          ))}
+        </div>
+        
         <div className="border-t-2 border-gray-300 p-3 flex">
           <input
             type="text"
@@ -129,7 +188,7 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
             className="flex-1 bg-white border-2 border-black rounded-lg px-3 py-2 mr-2"
           />
           <Button 
-            onClick={handleSendMessage} 
+            onClick={() => handleSendMessage()}
             disabled={!input.trim() || isTyping}
           >
             Send
