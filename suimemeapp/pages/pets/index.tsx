@@ -7,430 +7,469 @@ import Link from "next/link";
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { Button } from "@/components/ui/8bit/button";
 import { Card } from "@/components/ui/8bit/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/8bit/tabs";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-// Mock data for demonstration
-const MOCK_PETS = [
-  {
-    id: "0x123",
-    name: "Doggo",
-    type: 0,
-    level: 5,
-    experience: 230,
-    health: 80,
-    happiness: 90,
-    memecoin: {
-      name: "Dogecoin",
-      symbol: "DOGE",
-      image: "/sample/doge.png"
-    },
-    onMission: false
-  },
-  {
-    id: "0x456",
-    name: "Kitty",
-    type: 1,
-    level: 3,
-    experience: 120,
-    health: 70,
-    happiness: 60,
-    memecoin: {
-      name: "Shiba Inu",
-      symbol: "SHIB",
-      image: "/sample/shib.png"
-    },
-    onMission: true,
-    missionEndTime: Date.now() + 300000 // 5 minutes from now
-  },
-];
+import PetInteraction from "@/components/pet-interaction";
+import PetMissions from "@/components/pet-missions";
+import { useWallet } from "@/hooks/useWallet";
+import { petInteractionTransaction, startMissionTransaction, completeMissionTransaction } from "@/lib/contractInteraction";
+
+// Import additional components from 8bitcn UI
+import { Progress } from "@/components/ui/8bit/progress";
+import { Badge } from "@/components/ui/8bit/badge";
+import { Skeleton } from "@/components/ui/8bit/skeleton";
+import { PACKAGE_ID } from "@/lib/contractInteraction";
+import { getMemecoinByAddress } from "@/constants/memecoins";
+
+// Pet type helper
+const PET_TYPES = {
+  0: "Dog",
+  1: "Cat",
+  2: "Fish",
+  3: "Custom"
+};
+
+// Empty state component with 8bitcn styling
+const EmptyPetsState = () => (
+  <div className="flex flex-col items-center justify-center h-64 p-8 text-center border-4 border-black rounded-lg shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-purple-100">
+    <Image src="/sample/empty-pet.png" width={100} height={100} alt="No pets" className="mb-4" />
+    <h3 className="text-xl font-bold mb-2">No Pets Found</h3>
+    <p className="mb-4 text-gray-600">You don't have any MemePets yet. Create your first one!</p>
+    <Link href="/create-pet">
+      <Button>Create a Pet</Button>
+    </Link>
+  </div>
+);
 
 export default function MyPets() {
-  const [pets, setPets] = useState(MOCK_PETS);
+  const [pets, setPets] = useState<any[]>([]);
   const [selectedPet, setSelectedPet] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("stats");
+  const [loading, setLoading] = useState(true);
+  const [activeMission, setActiveMission] = useState<any>(null);
   
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
+  const { executeTransaction, isTransacting } = useWallet();
   
-  // In a real app, this would fetch the user's pets from the blockchain
+  // Fetch pets owned by the current user
   useEffect(() => {
-    if (account) {
-      // This would be replaced with actual blockchain data fetching
-      console.log("Would fetch pets owned by", account.address);
-    }
-  }, [account]);
-
-  // Helper function to format countdown time
-  const formatCountdown = (timestamp: number) => {
-    const diff = Math.max(0, timestamp - Date.now());
-    const minutes = Math.floor(diff / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
-    return `${minutes}m ${seconds}s`;
-  };
-  
-  const handlePetAction = (action: string) => {
-    if (!selectedPet) return;
-    
-    // In a real app, this would call the smart contract
-    console.log(`Performing ${action} on pet ${selectedPet.name}`);
-    
-    // Mock updates to pet stats for demonstration
-    const updatedPets = pets.map(pet => {
-      if (pet.id === selectedPet.id) {
-        switch (action) {
-          case "feed":
-            return { ...pet, health: Math.min(100, pet.health + 10) };
-          case "play":
-            return { ...pet, happiness: Math.min(100, pet.happiness + 10) };
-          case "train":
-            return { 
-              ...pet, 
-              experience: pet.experience + 20,
-              health: Math.max(0, pet.health - 5),
-              happiness: Math.max(0, pet.happiness - 10)
-            };
-          default:
-            return pet;
-        }
+    const fetchPets = async () => {
+      if (!account) {
+        setLoading(false);
+        return;
       }
-      return pet;
-    });
+      
+      try {
+        setLoading(true);
+        
+        // For a quick demo, we'll still use mock data but simulate a real fetch
+        // In production, uncomment and use this code:
+        
+        /* 
+        const objectsResponse = await suiClient.getOwnedObjects({
+          owner: account.address,
+          options: { showContent: true, showDisplay: true },
+          filter: { StructType: `${PACKAGE_ID}::memepet::Pet` }
+        });
+        
+        const userPets = await Promise.all(objectsResponse.data.map(async (obj) => {
+          if (!obj.data?.content?.fields) return null;
+          
+          const fields = obj.data.content.fields;
+          
+          // Get memecoin details
+          const memecoinAddress = fields.memecoin_address;
+          const memecoin = getMemecoinByAddress(memecoinAddress) || {
+            name: "Custom",
+            symbol: "CUSTOM",
+            image: "/sample/default.png"
+          };
+          
+          // Check for active missions
+          const missionResponse = await suiClient.getOwnedObjects({
+            owner: account.address,
+            filter: { StructType: `${PACKAGE_ID}::pet_actions::Mission` }
+          });
+          
+          const petMission = missionResponse.data.find(mission => {
+            return mission.data?.content?.fields?.pet_id === obj.data?.objectId;
+          });
+          
+          const onMission = !!petMission;
+          let missionEndTime = null;
+          let missionId = null;
+          
+          if (petMission && petMission.data?.content?.fields) {
+            const mFields = petMission.data.content.fields;
+            const startTime = Number(mFields.start_time);
+            const duration = Number(mFields.duration);
+            missionEndTime = (startTime + duration) * 1000;
+            missionId = petMission.data.objectId;
+          }
+          
+          return {
+            id: obj.data.objectId,
+            name: fields.name,
+            type: Number(fields.pet_type),
+            level: Number(fields.level),
+            experience: Number(fields.experience),
+            health: Number(fields.health),
+            happiness: Number(fields.happiness),
+            memecoin: memecoin,
+            onMission: onMission,
+            missionEndTime: missionEndTime,
+            missionId: missionId
+          };
+        }));
+        
+        const filteredPets = userPets.filter(pet => pet !== null);
+        setPets(filteredPets);
+        */
+        
+        // Mock data for development - remove in production
+        setTimeout(() => {
+          const mockPets = [
+            {
+              id: "0x123",
+              name: "Doggo",
+              type: 0,
+              level: 5,
+              experience: 230,
+              health: 80,
+              happiness: 90,
+              memecoin: {
+                name: "UNI",
+                symbol: "UNI",
+                image: "/sample/doge.png"
+              },
+              onMission: false
+            },
+            {
+              id: "0x456",
+              name: "Kitty",
+              type: 1,
+              level: 3,
+              experience: 120,
+              health: 70,
+              happiness: 60,
+              memecoin: {
+                name: "LOFI",
+                symbol: "LOFI",
+                image: "/sample/shib.png"
+              },
+              onMission: true,
+              missionEndTime: Date.now() + 300000, // 5 minutes from now
+              missionId: "0x789"
+            },
+          ];
+          setPets(mockPets);
+          setLoading(false);
+        }, 1000);
+        
+      } catch (error) {
+        console.error("Error fetching pets:", error);
+        toast.error("Failed to fetch your pets");
+        setLoading(false);
+      }
+    };
     
-    setPets(updatedPets);
-    setSelectedPet(updatedPets.find(p => p.id === selectedPet.id));
-  };
+    fetchPets();
+  }, [account, suiClient]);
   
-  const startMission = (difficulty: string) => {
-    if (!selectedPet) return;
-    
-    // In a real app, this would call the smart contract
-    console.log(`Starting ${difficulty} mission for pet ${selectedPet.name}`);
-    
-    // Mock starting a mission for demonstration
-    const duration = difficulty === "easy" ? 300000 : difficulty === "medium" ? 900000 : 1800000;
+  // Set active mission when selecting a pet
+  useEffect(() => {
+    if (selectedPet && selectedPet.onMission) {
+      setActiveMission({
+        id: selectedPet.missionId || `mission-${selectedPet.id}`,
+        type: 0, // Default to Explore mission
+        difficulty: 0, // Default to Easy difficulty
+        startTime: Math.floor((selectedPet.missionEndTime - 300000) / 1000), // 5 minutes before end time
+        duration: 300, // 5 minutes in seconds
+        completed: false
+      });
+    } else {
+      setActiveMission(null);
+    }
+  }, [selectedPet]);
+
+  const handleInteractionComplete = () => {
+    // In production, this would query the blockchain for updated pet stats
+    // For now, we'll simulate it
     const updatedPets = pets.map(pet => {
-      if (pet.id === selectedPet.id) {
+      if (pet.id === selectedPet?.id) {
         return {
           ...pet,
-          onMission: true,
-          missionEndTime: Date.now() + duration
+          health: Math.min(100, pet.health + 5),
+          happiness: Math.min(100, pet.happiness + 5),
+          experience: pet.experience + 10
         };
       }
       return pet;
     });
     
     setPets(updatedPets);
-    setSelectedPet(updatedPets.find(p => p.id === selectedPet.id));
+    setSelectedPet(updatedPets.find(p => p.id === selectedPet?.id));
   };
   
-  // Render no pets message when user has no pets
-  if (pets.length === 0 && account) {
-    return (
-      <main className="flex min-h-screen flex-col items-center py-16 px-4">
-        <div className="max-w-4xl w-full mx-auto text-center">
-          <h1 className="text-3xl font-bold mb-6">My Pets</h1>
-          <Card className="p-8 flex flex-col items-center">
-            <div className="text-5xl mb-4">🐾</div>
-            <h2 className="text-2xl font-bold mb-4">No Pets Found</h2>
-            <p className="mb-6 text-gray-600">
-              You don't have any MemePets yet. Create your first pet to get started!
-            </p>
-            <Link href="/create-pet">
-              <Button className="bg-purple-500 text-white">Create Your First Pet</Button>
-            </Link>
-          </Card>
-        </div>
-      </main>
-    );
-  }
-  
+  const handleMissionChange = () => {
+    // In production, this would query the blockchain for updated mission status
+    // For now, we'll simulate it
+    if (selectedPet) {
+      const now = Date.now();
+      const updatedPets = pets.map(pet => {
+        if (pet.id === selectedPet.id) {
+          if (pet.onMission) {
+            // Complete the mission
+            return {
+              ...pet,
+              onMission: false,
+              experience: pet.experience + 50
+            };
+          } else {
+            // Start a new mission
+            return {
+              ...pet,
+              onMission: true,
+              missionEndTime: now + 300000 // 5 minutes
+            };
+          }
+        }
+        return pet;
+      });
+      
+      setPets(updatedPets);
+      const updatedPet = updatedPets.find(p => p.id === selectedPet.id);
+      setSelectedPet(updatedPet);
+      
+      if (updatedPet?.onMission) {
+        setActiveMission({
+          id: `mission-${updatedPet.id}-${now}`,
+          type: 0, // Explore mission
+          difficulty: 0, // Easy
+          startTime: Math.floor(now / 1000),
+          duration: 300, // 5 minutes
+          completed: false
+        });
+      } else {
+        setActiveMission(null);
+      }
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center py-16 px-4">
-      <div className="max-w-6xl w-full mx-auto">
-        <h1 className="text-3xl font-bold mb-6">My Pets</h1>
-        
-        {!account ? (
-          <Card className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Connect Your Wallet</h2>
-            <p className="mb-6 text-gray-600">
-              Connect your wallet to view your MemePets.
-            </p>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Pet List */}
-            <div className="col-span-1">
-              <div className="grid gap-4">
+    <div className="container mx-auto py-6">
+      <div className="flex flex-col items-start mb-8">
+        <h1 className="text-4xl font-bold">My MemePets</h1>
+        <p className="text-gray-600 mt-2">
+          Train, play, and send your virtual pets on missions!
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Pet List */}
+        <div className="lg:col-span-1">
+          <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Your Pets</h2>
+              <Link href="/create-pet">
+                <Button size="sm">+ New Pet</Button>
+              </Link>
+            </div>
+            
+            {loading ? (
+              // Loading Skeleton with 8bitcn styling
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="border-2 border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center">
+                      <Skeleton className="h-12 w-12 rounded-full mr-3" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : pets.length === 0 ? (
+              <EmptyPetsState />
+            ) : (
+              <div className="space-y-3">
                 {pets.map((pet) => (
                   <motion.div
                     key={pet.id}
-                    whileHover={{ scale: 1.02 }}
+                    className={`
+                      border-4 p-3 rounded-lg cursor-pointer transition-all duration-200 
+                      ${selectedPet?.id === pet.id 
+                        ? 'border-purple-500 bg-purple-50' 
+                        : 'border-gray-200 hover:border-gray-400'}
+                    `}
                     onClick={() => setSelectedPet(pet)}
-                    className={`cursor-pointer p-4 border-2 rounded-lg ${selectedPet?.id === pet.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200'}`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="relative w-12 h-12">
-                        <Image
-                          src={pet.memecoin.image}
-                          alt={pet.name}
-                          fill
-                          className="object-contain"
+                    <div className="flex items-center">
+                      <div className="relative w-12 h-12 mr-3">
+                        <Image 
+                          src={pet.memecoin.image} 
+                          alt={pet.name} 
+                          width={48} 
+                          height={48} 
+                          className="rounded-full object-cover border-2 border-black"
                         />
+                        {pet.onMission && (
+                          <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold px-1 rounded-full border-2 border-black">
+                            🚀
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h3 className="font-bold">{pet.name}</h3>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-600">Lvl {pet.level}</span>
-                          {pet.onMission && (
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                              On Mission
-                            </span>
-                          )}
+                        <div className="flex items-center text-xs text-gray-600">
+                          <span className="mr-2">Lvl {pet.level}</span>
+                          <span className="mr-2">•</span>
+                          <span>{PET_TYPES[pet.type as keyof typeof PET_TYPES]}</span>
                         </div>
                       </div>
                     </div>
                   </motion.div>
                 ))}
-                
-                <Link href="/create-pet">
-                  <Button className="w-full">Create New Pet</Button>
-                </Link>
               </div>
-            </div>
-            
-            {/* Pet Details */}
-            <div className="col-span-1 md:col-span-2">
-              {selectedPet ? (
-                <Card className="p-6">
-                  <div className="flex flex-col md:flex-row gap-8">
-                    {/* Pet Avatar & Basic Info */}
-                    <div className="w-full md:w-1/3 flex flex-col items-center">
-                      <div className="relative w-32 h-32 mb-4">
-                        <Image
-                          src={selectedPet.memecoin.image}
-                          alt={selectedPet.name}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
-                      <h2 className="text-2xl font-bold mb-1">{selectedPet.name}</h2>
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className="text-sm bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">
-                          Level {selectedPet.level}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {selectedPet.memecoin.symbol}
-                        </span>
-                      </div>
-                      
-                      {selectedPet.onMission && (
-                        <div className="w-full bg-blue-100 p-3 rounded-lg text-center mb-4">
-                          <p className="text-sm font-semibold text-blue-800">On Mission</p>
-                          <p className="text-xs text-blue-600">
-                            Returns in: {formatCountdown(selectedPet.missionEndTime)}
-                          </p>
-                        </div>
-                      )}
+            )}
+          </div>
+        </div>
+        
+        {/* Pet Details */}
+        <div className="lg:col-span-2">
+          {selectedPet ? (
+            <div>
+              <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center">
+                  <div className="relative w-24 h-24 mb-4 sm:mb-0 sm:mr-6">
+                    <Image 
+                      src={selectedPet.memecoin.image} 
+                      alt={selectedPet.name} 
+                      width={96} 
+                      height={96} 
+                      className="rounded-lg object-cover border-4 border-black"
+                    />
+                    <Badge variant="outline" className="absolute -top-2 -right-2 bg-white border-2 border-black">
+                      {selectedPet.memecoin.symbol}
+                    </Badge>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center mb-1">
+                      <h2 className="text-3xl font-bold mr-2">{selectedPet.name}</h2>
+                      <Badge 
+                        className={`
+                          ${selectedPet.type === 0 ? 'bg-yellow-400' : 
+                            selectedPet.type === 1 ? 'bg-blue-400' : 
+                            selectedPet.type === 2 ? 'bg-green-400' : 'bg-purple-400'} 
+                          border-2 border-black
+                        `}
+                      >
+                        {PET_TYPES[selectedPet.type as keyof typeof PET_TYPES]}
+                      </Badge>
+                    </div>
+                    <div className="text-sm text-gray-600 mb-4">
+                      Level {selectedPet.level} MemePet • 
+                      Created from {selectedPet.memecoin.name} memecoin
                     </div>
                     
-                    {/* Pet Details & Actions */}
-                    <div className="w-full md:w-2/3">
-                      {/* Tabs */}
-                      <div className="flex border-b border-gray-200 mb-4">
-                        <button
-                          className={`px-4 py-2 ${activeTab === 'stats' ? 'border-b-2 border-purple-500 font-medium' : 'text-gray-500'}`}
-                          onClick={() => setActiveTab('stats')}
-                        >
-                          Stats
-                        </button>
-                        <button
-                          className={`px-4 py-2 ${activeTab === 'actions' ? 'border-b-2 border-purple-500 font-medium' : 'text-gray-500'}`}
-                          onClick={() => setActiveTab('actions')}
-                        >
-                          Actions
-                        </button>
-                        <button
-                          className={`px-4 py-2 ${activeTab === 'missions' ? 'border-b-2 border-purple-500 font-medium' : 'text-gray-500'}`}
-                          onClick={() => setActiveTab('missions')}
-                        >
-                          Missions
-                        </button>
-                        <button
-                          className={`px-4 py-2 ${activeTab === 'chat' ? 'border-b-2 border-purple-500 font-medium' : 'text-gray-500'}`}
-                          onClick={() => setActiveTab('chat')}
-                        >
-                          Chat
-                        </button>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="flex justify-between text-sm font-medium mb-1">
+                          <span>Experience</span>
+                          <span>{selectedPet.experience}/{selectedPet.level * 100}</span>
+                        </div>
+                        <Progress 
+                          value={(selectedPet.experience / (selectedPet.level * 100)) * 100} 
+                          className="h-3 bg-gray-200 border-2 border-black" 
+                          indicatorClassName="bg-purple-500"
+                        />
                       </div>
-                      
-                      {/* Stats Tab */}
-                      {activeTab === 'stats' && (
-                        <div>
-                          <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Health</label>
-                            <div className="w-full bg-gray-200 rounded-full h-4">
-                              <div 
-                                className="bg-green-500 h-4 rounded-full"
-                                style={{ width: `${selectedPet.health}%` }}
-                              ></div>
-                            </div>
-                            <div className="flex justify-between text-xs mt-1">
-                              <span>{selectedPet.health}/100</span>
-                            </div>
-                          </div>
-                          
-                          <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Happiness</label>
-                            <div className="w-full bg-gray-200 rounded-full h-4">
-                              <div 
-                                className="bg-yellow-500 h-4 rounded-full"
-                                style={{ width: `${selectedPet.happiness}%` }}
-                              ></div>
-                            </div>
-                            <div className="flex justify-between text-xs mt-1">
-                              <span>{selectedPet.happiness}/100</span>
-                            </div>
-                          </div>
-                          
-                          <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Experience</label>
-                            <div className="w-full bg-gray-200 rounded-full h-4">
-                              <div 
-                                className="bg-blue-500 h-4 rounded-full"
-                                style={{ width: `${(selectedPet.experience % 100)}%` }}
-                              ></div>
-                            </div>
-                            <div className="flex justify-between text-xs mt-1">
-                              <span>{selectedPet.experience % 100}/100 to next level</span>
-                              <span>Total: {selectedPet.experience} XP</span>
-                            </div>
-                          </div>
+                      <div>
+                        <div className="flex justify-between text-sm font-medium mb-1">
+                          <span>Health</span>
+                          <span>{selectedPet.health}/100</span>
                         </div>
-                      )}
-                      
-                      {/* Actions Tab */}
-                      {activeTab === 'actions' && (
-                        <div className="grid grid-cols-3 gap-4">
-                          <Button
-                            onClick={() => handlePetAction('feed')}
-                            disabled={selectedPet.onMission}
-                            className="p-4 h-24 flex flex-col items-center justify-center"
-                          >
-                            <span className="text-2xl mb-1">🍖</span>
-                            <span>Feed</span>
-                          </Button>
-                          
-                          <Button
-                            onClick={() => handlePetAction('play')}
-                            disabled={selectedPet.onMission}
-                            className="p-4 h-24 flex flex-col items-center justify-center"
-                          >
-                            <span className="text-2xl mb-1">🎮</span>
-                            <span>Play</span>
-                          </Button>
-                          
-                          <Button
-                            onClick={() => handlePetAction('train')}
-                            disabled={selectedPet.onMission}
-                            className="p-4 h-24 flex flex-col items-center justify-center"
-                          >
-                            <span className="text-2xl mb-1">🏋️</span>
-                            <span>Train</span>
-                          </Button>
+                        <Progress 
+                          value={selectedPet.health} 
+                          className="h-3 bg-gray-200 border-2 border-black" 
+                          indicatorClassName="bg-green-500"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-sm font-medium mb-1">
+                          <span>Happiness</span>
+                          <span>{selectedPet.happiness}/100</span>
                         </div>
-                      )}
-                      
-                      {/* Missions Tab */}
-                      {activeTab === 'missions' && (
-                        <div>
-                          {selectedPet.onMission ? (
-                            <div className="text-center p-6">
-                              <p className="text-xl font-bold mb-2">Mission in Progress</p>
-                              <p className="mb-4">Your pet is currently on a mission and will return in {formatCountdown(selectedPet.missionEndTime)}.</p>
-                            </div>
-                          ) : (
-                            <div>
-                              <p className="mb-4">Send your pet on a mission to earn rewards!</p>
-                              
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <Button
-                                  onClick={() => startMission('easy')}
-                                  className="p-4 flex flex-col items-center"
-                                >
-                                  <span className="font-bold">Easy Mission</span>
-                                  <span className="text-sm">5 minutes</span>
-                                  <span className="text-sm">+25 XP</span>
-                                </Button>
-                                
-                                <Button
-                                  onClick={() => startMission('medium')}
-                                  disabled={selectedPet.level < 5}
-                                  className="p-4 flex flex-col items-center"
-                                >
-                                  <span className="font-bold">Medium Mission</span>
-                                  <span className="text-sm">15 minutes</span>
-                                  <span className="text-sm">+75 XP</span>
-                                  {selectedPet.level < 5 && (
-                                    <span className="text-xs text-red-500">Requires Level 5</span>
-                                  )}
-                                </Button>
-                                
-                                <Button
-                                  onClick={() => startMission('hard')}
-                                  disabled={selectedPet.level < 10}
-                                  className="p-4 flex flex-col items-center"
-                                >
-                                  <span className="font-bold">Hard Mission</span>
-                                  <span className="text-sm">30 minutes</span>
-                                  <span className="text-sm">+150 XP</span>
-                                  {selectedPet.level < 10 && (
-                                    <span className="text-xs text-red-500">Requires Level 10</span>
-                                  )}
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Chat Tab */}
-                      {activeTab === 'chat' && (
-                        <div className="flex flex-col h-64">
-                          <div className="flex-grow border border-gray-200 rounded-lg p-4 mb-4 overflow-y-auto">
-                            <div className="flex justify-start mb-2">
-                              <div className="bg-gray-200 rounded-lg p-2 max-w-[80%]">
-                                <p>Hi there! I'm {selectedPet.name}. How can I help you today?</p>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              className="flex-grow p-2 border-2 border-gray-300 rounded-lg"
-                              placeholder="Chat with your pet..."
-                              disabled={selectedPet.onMission}
-                            />
-                            <Button disabled={selectedPet.onMission}>Send</Button>
-                          </div>
-                          {selectedPet.onMission && (
-                            <p className="text-sm text-gray-500 mt-2">Your pet is on a mission and can't chat right now.</p>
-                          )}
-                        </div>
-                      )}
+                        <Progress 
+                          value={selectedPet.happiness} 
+                          className="h-3 bg-gray-200 border-2 border-black" 
+                          indicatorClassName="bg-blue-500"
+                        />
+                      </div>
                     </div>
                   </div>
-                </Card>
-              ) : (
-                <div className="h-full flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-12">
-                  <div className="text-center">
-                    <p className="text-gray-500 mb-4">Select a pet to view details</p>
-                  </div>
                 </div>
-              )}
+              </div>
+              
+              <Tabs defaultValue="interact" className="mb-6">
+                <TabsList className="mb-4 border-4 border-black">
+                  <TabsTrigger value="interact">Interact</TabsTrigger>
+                  <TabsTrigger value="missions">Missions</TabsTrigger>
+                  <TabsTrigger value="chat">AI Chat</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="interact">
+                  <PetInteraction 
+                    petId={selectedPet.id} 
+                    onInteractionComplete={handleInteractionComplete} 
+                  />
+                </TabsContent>
+                
+                <TabsContent value="missions">
+                  <PetMissions
+                    petId={selectedPet.id}
+                    petLevel={selectedPet.level}
+                    activeMission={activeMission}
+                    onMissionChange={handleMissionChange}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="chat">
+                  <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
+                    <h3 className="text-xl font-bold mb-4">Chat with {selectedPet.name}</h3>
+                    <div className="border-2 border-gray-300 rounded-lg p-4 bg-gray-50 h-64 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-4xl mb-2">👾</div>
+                        <h4 className="font-bold mb-1">AI Chat Coming Soon!</h4>
+                        <p className="text-sm text-gray-600">
+                          Soon you'll be able to chat with your pet's unique AI personality.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-8 text-center">
+              <Image src="/sample/select-pet.png" width={150} height={150} alt="Select a pet" className="mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">Select a Pet</h3>
+              <p className="text-gray-600">
+                Choose one of your pets from the list to view details and interact with them.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-    </main>
+      
+      <ToastContainer position="bottom-right" theme="light" />
+    </div>
   );
 } 

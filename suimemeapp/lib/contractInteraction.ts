@@ -1,14 +1,16 @@
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 
-// @kamal Get package ID from environment or use default for development
-// This should be updated after deployment with the actual package ID
-export const PACKAGE_ID = process.env.NEXT_PUBLIC_MEMEPET_PACKAGE_ID || '0x0'; 
+// Update with the actual package ID from deployment
+export const PACKAGE_ID = '0x9d7f12bca6a107ad4f73d1a789f5575ef8760a372f7e23ffe4b35c8400fc621b';
+
+// Admin Cap object ID from deployment
+export const ADMIN_CAP_ID = '0x51f3e39cd3140ef7ce3977edf7b61fe1f9186a456c6d103ca839ab577d49b41c';
 
 // Supported memecoin addresses
 export const MEMECOIN_ADDRESSES = {
-  UNI: process.env.NEXT_PUBLIC_UNI_ADDRESS || '0x123456',
-  GLUB: process.env.NEXT_PUBLIC_GLUB_ADDRESS || '0x234567',
-  LOFI: process.env.NEXT_PUBLIC_LOFI_ADDRESS || '0x345678',
+  UNI: process.env.NEXT_PUBLIC_UNI_ADDRESS || '0xc905c9263609d6ea700ff6267978107336beab3df377d58a1c53f6e25b7630ee',
+  GLUB: process.env.NEXT_PUBLIC_GLUB_ADDRESS || '0x33fb202f090f797eab5dc35e64cffbb051341dc4df6af4c3fba685390bf94df7',
+  LOFI: process.env.NEXT_PUBLIC_LOFI_ADDRESS || '0xd6918afa64d432b84b48088d165b0dda0b7459463a7d66365f7ff890cae22d2d',
 };
 
 // System clock object ID on Sui
@@ -225,4 +227,4 @@ export function cancelListingTransaction(listingId: string): TransactionBlock {
   });
   
   return tx;
-} 
+}
