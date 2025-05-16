@@ -2,7 +2,9 @@
 const nextConfig = {
   reactStrictMode: false,
   webpack: (config) => {
+    // Add fallbacks for Node.js core modules
     config.resolve.fallback = { fs: false, net: false, tls: false };
+    
     return config;
   },
   typescript: {
@@ -12,7 +14,12 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ["*"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
 };
 
