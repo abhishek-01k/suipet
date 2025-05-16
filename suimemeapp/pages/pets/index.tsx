@@ -14,6 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import PetInteraction from "@/components/pet-interaction";
 import PetMissions from "@/components/pet-missions";
 import PetChat from "@/components/pet-chat";
+import PetEvolution from "@/components/pet-evolution";
 import { useWallet } from "@/hooks/useWallet";
 import { petInteractionTransaction, startMissionTransaction, completeMissionTransaction } from "@/lib/contractInteraction";
 
@@ -423,6 +424,7 @@ export default function MyPets() {
                 <TabsList className="mb-4 border-4 border-black">
                   <TabsTrigger value="interact">Interact</TabsTrigger>
                   <TabsTrigger value="missions">Missions</TabsTrigger>
+                  <TabsTrigger value="evolution">Evolution</TabsTrigger>
                   <TabsTrigger value="chat">AI Chat</TabsTrigger>
                 </TabsList>
                 
@@ -439,6 +441,35 @@ export default function MyPets() {
                     petLevel={selectedPet.level}
                     activeMission={activeMission}
                     onMissionChange={handleMissionChange}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="evolution">
+                  <PetEvolution
+                    petId={selectedPet.id}
+                    petName={selectedPet.name}
+                    petType={selectedPet.type}
+                    petLevel={selectedPet.level}
+                    petExperience={selectedPet.experience}
+                    petMemecoin={selectedPet.memecoin}
+                    onEvolve={() => {
+                      // In a real app, this would fetch the updated pet data after evolution
+                      // For now, we'll simulate a level and stat increase
+                      const updatedPets = pets.map(pet => {
+                        if (pet.id === selectedPet.id) {
+                          return {
+                            ...pet,
+                            level: pet.level + 5,
+                            health: 100,
+                            happiness: 100
+                          };
+                        }
+                        return pet;
+                      });
+                      
+                      setPets(updatedPets);
+                      setSelectedPet(updatedPets.find(p => p.id === selectedPet.id));
+                    }}
                   />
                 </TabsContent>
                 

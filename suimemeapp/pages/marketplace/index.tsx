@@ -211,7 +211,7 @@ export default function Marketplace() {
                   listing={listing}
                   onBuy={handleBuy}
                   isCurrentUserSeller={account?.address === listing.seller}
-                  onCancel={(listingId) => {
+                  onCancel={(listingId: string) => {
                     // Remove the listing (in a real app, would call contract)
                     setListings(listings.filter(l => l.id !== listingId));
                   }}
