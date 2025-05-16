@@ -1,7 +1,18 @@
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 
-// Replace with the actual package ID after smart contract deployment
-export const PACKAGE_ID = '0x123'; // Mock package ID
+// @kamal Get package ID from environment or use default for development
+// This should be updated after deployment with the actual package ID
+export const PACKAGE_ID = process.env.NEXT_PUBLIC_MEMEPET_PACKAGE_ID || '0x0'; 
+
+// Supported memecoin addresses
+export const MEMECOIN_ADDRESSES = {
+  UNI: process.env.NEXT_PUBLIC_UNI_ADDRESS || '0x123456',
+  GLUB: process.env.NEXT_PUBLIC_GLUB_ADDRESS || '0x234567',
+  LOFI: process.env.NEXT_PUBLIC_LOFI_ADDRESS || '0x345678',
+};
+
+// System clock object ID on Sui
+export const CLOCK_OBJECT_ID = '0x6';
 
 export interface CreatePetParams {
   name: string;
@@ -101,7 +112,7 @@ export function startMissionTransaction(params: StartMissionParams): Transaction
   
   // Get the pet object and shared clock object
   const pet = tx.object(petId);
-  const clock = tx.object('0x6'); // Sui system clock object
+  const clock = tx.object(CLOCK_OBJECT_ID); // Use the constant
   
   // Call the start_mission function
   tx.moveCall({
@@ -128,7 +139,7 @@ export function completeMissionTransaction(params: CompleteMissionParams): Trans
   // Get the mission object, pet object, and shared clock object
   const mission = tx.object(missionId);
   const pet = tx.object(petId);
-  const clock = tx.object('0x6'); // Sui system clock object
+  const clock = tx.object(CLOCK_OBJECT_ID); // Use the constant
   
   // Call the complete_mission function
   tx.moveCall({

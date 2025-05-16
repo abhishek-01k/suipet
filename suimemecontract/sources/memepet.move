@@ -11,12 +11,18 @@ module memepet::memepet {
     /// Error codes
     const EInsufficientFunds: u64 = 0;
     const EInvalidPetType: u64 = 1;
+    const EInvalidMemecoin: u64 = 2;
     
     /// Pet types enum
     const PET_TYPE_DOG: u8 = 0;
     const PET_TYPE_CAT: u8 = 1;
     const PET_TYPE_FISH: u8 = 2;
     const PET_TYPE_CUSTOM: u8 = 3;
+    
+    /// Supported Sui memecoins
+    const MEMECOIN_UNI: address = @0xc905c9263609d6ea700ff6267978107336beab3df377d58a1c53f6e25b7630ee; // Replace with actual UNI coin address on deployment
+    const MEMECOIN_GLUB: address = @0x33fb202f090f797eab5dc35e64cffbb051341dc4df6af4c3fba685390bf94df7; // Replace with actual GLUB coin address on deployment
+    const MEMECOIN_LOFI: address = @0xd6918afa64d432b84b48088d165b0dda0b7459463a7d66365f7ff890cae22d2d; // Replace with actual LOFI coin address on deployment
     
     /// Events
     public struct PetCreated has copy, drop {
@@ -61,6 +67,13 @@ module memepet::memepet {
         }, tx_context::sender(ctx));
     }
     
+    /// Validate if a memecoin is supported
+    fun is_supported_memecoin(memecoin_address: address): bool {
+        memecoin_address == MEMECOIN_UNI || 
+        memecoin_address == MEMECOIN_GLUB || 
+        memecoin_address == MEMECOIN_LOFI
+    }
+    
     /// Create a new pet for the caller
     public entry fun create_pet(
         name: vector<u8>,
@@ -72,6 +85,9 @@ module memepet::memepet {
     ) {
         // Verify pet type is valid
         assert!(pet_type <= PET_TYPE_CUSTOM, EInvalidPetType);
+        
+        // Verify memecoin is supported or allowed custom
+        assert!(is_supported_memecoin(memecoin_address) || pet_type == PET_TYPE_CUSTOM, EInvalidMemecoin);
         
         // Fee to create a pet - 0.1 SUI
         let pet_creation_fee = 100000000; // 0.1 SUI in MIST
@@ -253,6 +269,21 @@ module memepet::memepet {
     /// Get pet's stats as a tuple
     public fun stats(pet: &Pet): (u64, u64, u64) {
         (pet.level, pet.happiness, pet.health)
+    }
+    
+    /// Get pet's experience
+    public fun experience(pet: &Pet): u64 {
+        pet.experience
+    }
+    
+    /// Get pet's happiness
+    public fun happiness(pet: &Pet): u64 {
+        pet.happiness
+    }
+    
+    /// Get pet's health
+    public fun health(pet: &Pet): u64 {
+        pet.health
     }
     
     /// Get pet's memecoin address
