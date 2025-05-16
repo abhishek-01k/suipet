@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import PetInteraction from "@/components/pet-interaction";
 import PetMissions from "@/components/pet-missions";
+import PetChat from "@/components/pet-chat";
 import { useWallet } from "@/hooks/useWallet";
 import { petInteractionTransaction, startMissionTransaction, completeMissionTransaction } from "@/lib/contractInteraction";
 
@@ -386,9 +387,9 @@ export default function MyPets() {
                           <span>{selectedPet.experience}/{selectedPet.level * 100}</span>
                         </div>
                         <Progress 
-                          value={(selectedPet.experience / (selectedPet.level * 100)) * 100} 
-                          className="h-3 bg-gray-200 border-2 border-black" 
-                          indicatorClassName="bg-purple-500"
+                          value={(selectedPet.experience / (selectedPet.level * 100)) * 100}
+                          className="h-3 border-2 border-black"
+                          variant="default"
                         />
                       </div>
                       <div>
@@ -397,9 +398,9 @@ export default function MyPets() {
                           <span>{selectedPet.health}/100</span>
                         </div>
                         <Progress 
-                          value={selectedPet.health} 
-                          className="h-3 bg-gray-200 border-2 border-black" 
-                          indicatorClassName="bg-green-500"
+                          value={selectedPet.health}
+                          className="h-3 border-2 border-black"
+                          variant="default"
                         />
                       </div>
                       <div>
@@ -408,9 +409,9 @@ export default function MyPets() {
                           <span>{selectedPet.happiness}/100</span>
                         </div>
                         <Progress 
-                          value={selectedPet.happiness} 
-                          className="h-3 bg-gray-200 border-2 border-black" 
-                          indicatorClassName="bg-blue-500"
+                          value={selectedPet.happiness}
+                          className="h-3 border-2 border-black"
+                          variant="default"
                         />
                       </div>
                     </div>
@@ -442,18 +443,12 @@ export default function MyPets() {
                 </TabsContent>
                 
                 <TabsContent value="chat">
-                  <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
-                    <h3 className="text-xl font-bold mb-4">Chat with {selectedPet.name}</h3>
-                    <div className="border-2 border-gray-300 rounded-lg p-4 bg-gray-50 h-64 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-4xl mb-2">👾</div>
-                        <h4 className="font-bold mb-1">AI Chat Coming Soon!</h4>
-                        <p className="text-sm text-gray-600">
-                          Soon you'll be able to chat with your pet's unique AI personality.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <PetChat
+                    petId={selectedPet.id}
+                    petName={selectedPet.name}
+                    petType={selectedPet.type}
+                    petMemecoin={selectedPet.memecoin}
+                  />
                 </TabsContent>
               </Tabs>
             </div>

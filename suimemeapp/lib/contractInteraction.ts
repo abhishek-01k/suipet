@@ -45,6 +45,13 @@ export interface BuyPetParams {
   price: number; // In SUI (will be converted to MIST)
 }
 
+export interface SaveChatMessageParams {
+  petId: string;
+  message: string;
+  isFromPet: boolean;
+  timestamp: number;
+}
+
 /**
  * Creates a transaction to mint a new pet
  */
@@ -224,6 +231,33 @@ export function cancelListingTransaction(listingId: string): TransactionBlock {
   tx.moveCall({
     target: `${PACKAGE_ID}::pet_market::cancel_listing`,
     arguments: [listing],
+  });
+  
+  return tx;
+}
+
+/**
+ * Creates a transaction to save a chat message on the blockchain
+ * Note: This will be implemented in the future when AI chat is fully integrated
+ */
+export function saveChatMessageTransaction(params: SaveChatMessageParams): TransactionBlock {
+  const { petId, message, isFromPet, timestamp } = params;
+  
+  const tx = new TransactionBlock();
+  
+  // Get the pet object
+  const pet = tx.object(petId);
+  
+  // Call the save_chat_message function
+  // This is a placeholder for a future contract function
+  tx.moveCall({
+    target: `${PACKAGE_ID}::memepet::save_chat_message`,
+    arguments: [
+      pet,
+      tx.pure(message),
+      tx.pure(isFromPet),
+      tx.pure(timestamp.toString()),
+    ],
   });
   
   return tx;

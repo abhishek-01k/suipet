@@ -13,6 +13,7 @@
     "@mysten/dapp-kit": "^0.16.3",
     "@mysten/sui.js": "^0.54.1",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-progress": "^1.1.6",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.2.2",
     "@radix-ui/react-tabs": "^1.1.11",

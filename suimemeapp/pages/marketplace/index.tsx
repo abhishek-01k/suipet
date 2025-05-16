@@ -8,6 +8,7 @@ import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { Button } from "@/components/ui/8bit/button";
 import { Card } from "@/components/ui/8bit/card";
 import { Input } from "@/components/ui/8bit/input";
+import MarketplaceListing from "@/components/marketplace-listing";
 
 // Mock marketplace data
 const MOCK_LISTINGS = [
@@ -201,60 +202,28 @@ export default function Marketplace() {
               Connect your wallet to browse and purchase MemePets.
             </p>
           </Card>
-        ) : filteredListings.length === 0 ? (
-          <div className="text-center p-12 border-2 border-dashed border-gray-300 rounded-lg">
-            <div className="text-5xl mb-4">🔍</div>
-            <h2 className="text-2xl font-bold mb-4">No Listings Found</h2>
-            <p className="mb-6 text-gray-600">
-              There are no MemePets available for purchase with this filter. Try a different filter or check back later.
-            </p>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredListings.map((listing) => (
-              <motion.div 
-                key={listing.id}
-                whileHover={{ y: -5 }}
-                className="bg-white rounded-lg overflow-hidden border-2 border-black neo-brutalism-shadow"
-              >
-                <div className="bg-gradient-to-r from-purple-400 to-blue-500 p-6 flex flex-col items-center">
-                  <div className="relative w-32 h-32 mb-4">
-                    <Image
-                      src={listing.pet.memecoin.image}
-                      alt={listing.pet.name}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold text-white">{listing.pet.name}</h3>
-                  <p className="text-white opacity-80 mb-2">Level {listing.pet.level}</p>
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <p className="text-gray-600">Price</p>
-                      <p className="text-2xl font-bold">{listing.price} SUI</p>
-                    </div>
-                    <div className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                      {listing.pet.memecoin.symbol}
-                    </div>
-                  </div>
-                  
-                  <Button
-                    onClick={() => handleBuy(listing.id)}
-                    className="w-full"
-                    disabled={listing.seller === account.address}
-                  >
-                    {listing.seller === account.address ? "Your Listing" : "Buy Now"}
-                  </Button>
-                  
-                  <p className="text-xs text-center mt-2 text-gray-500">
-                    Seller: {listing.seller.substring(0, 6)}...{listing.seller.substring(listing.seller.length - 4)}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {filteredListings.length > 0 ? (
+              filteredListings.map((listing) => (
+                <MarketplaceListing
+                  key={listing.id}
+                  listing={listing}
+                  onBuy={handleBuy}
+                  isCurrentUserSeller={account?.address === listing.seller}
+                  onCancel={(listingId) => {
+                    // Remove the listing (in a real app, would call contract)
+                    setListings(listings.filter(l => l.id !== listingId));
+                  }}
+                  isLoading={isListing}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-10">
+                <h3 className="text-xl font-bold mb-2">No listings found</h3>
+                <p className="text-gray-600">Try a different filter or check back later.</p>
+              </div>
+            )}
           </div>
         )}
       </div>
