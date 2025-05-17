@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MetaTagsContainer from "@/components/containers/metaTagsContainer";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,36 +27,38 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 
   return (
     <>
-      {isClient ? (
-        <QueryClientProvider client={queryClient}>
-          <SuiWalletProvider>
-            <AppContextProvider>
-              <TooltipProvider>
-                <MetaTagsContainer />
-                <Header />
-                <Component {...pageProps} className={cn(inter.className)} />
-                <Footer />
-                <ToastContainer
-                  theme="dark"
-                  draggable
-                  position="bottom-right"
-                  className={"mt-20"}
-                  toastClassName={(context) =>
-                    "relative flex py-3.5 px-4 mx-4 min-h-10 mb-5 rounded-md justify-between overflow-hidden cursor-pointer bg-white/20 backdrop-blur-md"
-                  }
-                  toastStyle={{
-                    WebkitBackdropFilter: "blur(12px)",
-                  }}
-                />
-              </TooltipProvider>
-            </AppContextProvider>
-          </SuiWalletProvider>
-        </QueryClientProvider>
-      ) : (
-        <div>
-          <MetaTagsContainer />
-        </div>
-      )}
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {isClient ? (
+          <QueryClientProvider client={queryClient}>
+            <SuiWalletProvider>
+              <AppContextProvider>
+                <TooltipProvider>
+                  <MetaTagsContainer />
+                  <Header />
+                  <Component {...pageProps} className={cn(inter.className)} />
+                  <Footer />
+                  <ToastContainer
+                    theme="dark"
+                    draggable
+                    position="bottom-right"
+                    className={"mt-20"}
+                    toastClassName={(context) =>
+                      "relative flex py-3.5 px-4 mx-4 min-h-10 mb-5 rounded-md justify-between overflow-hidden cursor-pointer bg-white/20 backdrop-blur-md"
+                    }
+                    toastStyle={{
+                      WebkitBackdropFilter: "blur(12px)",
+                    }}
+                  />
+                </TooltipProvider>
+              </AppContextProvider>
+            </SuiWalletProvider>
+          </QueryClientProvider>
+        ) : (
+          <div>
+            <MetaTagsContainer />
+          </div>
+        )}
+      </ThemeProvider>
     </>
   );
 };

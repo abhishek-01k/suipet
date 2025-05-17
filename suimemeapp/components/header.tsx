@@ -8,6 +8,8 @@ import ConnectMenu from "./ui/connectMenu";
 import "@mysten/dapp-kit/dist/index.css";
 import { AppContext } from "@/context/AppContext";
 import { Link as LinkIcon } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./ui/button";
 
 // import SlideInMenu from "./slideInMenu";
 // import RpcSetting from "./rpcSetting";
@@ -17,12 +19,12 @@ const Header = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 w-full backdrop-blur-md"
+      className="fixed top-0 left-0 w-full backdrop-blur-md z-[100]"
       style={{
         WebkitBackdropFilter: "blur(12px)",
       }}
     >
-      <header className="w-full max-w-360 mx-auto h-20 flex items-center justify-between pt-5 pb-3 px-4 z-50">
+      <header className="w-full max-w-360 mx-auto h-20 flex items-center justify-between pt-5 pb-3 px-4">
         {/* Logo Link */}
         <div className="flex items-center gap-2">
           <Link href="/">
@@ -34,31 +36,31 @@ const Header = () => {
               className="rounded-full"
             />
           </Link>
-          <h1 className="text-2xl font-bold text-white">MemePet</h1>
+          <h1 className="text-2xl font-bold ">MemePet</h1>
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/pets" className="text-white hover:underline">My Pets</Link>
-          <Link href="/marketplace" className="text-white hover:underline">Marketplace</Link>
+          <Link href="/pets" className=" hover:underline">My Pets</Link>
+          <Link href="/marketplace" className=" hover:underline">Marketplace</Link>
           {walletAddress ? (
             <ConnectMenu walletAddress={walletAddress} suiName={suiName} />
           ) : (
             <ConnectModal
               trigger={
-                <button
-                  className="h-full rounded-[11px] outline-none ring-0 xl:button-animate-105 overflow-hidden p-[1px]"
+                <Button
+                  className="h-full rounded-xl outline-none ring-0 xl:button-animate-105 overflow-hidden px-6 py-4 "
                   disabled={!!walletAddress}
+                  variant='secondary'
                 >
-                  <div className="h-full px-5 py-4 flex items-center gap-2 rounded-xl bg-white/10">
-                    <span className="text-sm">
-                      {walletAddress ? "Connected" : "Connect Wallet"}
-                    </span>
-                    <LinkIcon size={17} className="text-white" />
-                  </div>
-                </button>
+                  <span className="text-sm">
+                    {walletAddress ? "Connected" : "Connect Wallet"}
+                  </span>
+                  <LinkIcon size={17} className="" />
+                </Button>
               }
             />
           )}
+          <ThemeToggle />
         </div>
 
       </header>

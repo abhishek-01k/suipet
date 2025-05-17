@@ -10,8 +10,9 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center">
 
       {/* Hero Section */}
-      <section className="w-full py-20 flex flex-col items-center justify-center bg-gradient-to-b from-purple-500 to-blue-500 text-white">
-        <div className="container mx-auto px-4">
+      <section className="w-full py-20 flex flex-col items-center justify-center bg-gradient-to-b from-primary/20 via-primary/10 to-transparent dark:from-primary/10 dark:via-primary/5 dark:to-transparent text-foreground relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent dark:from-primary/10 dark:via-transparent dark:to-transparent"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -20,13 +21,13 @@ export default function Home() {
               className="text-center lg:text-left lg:w-1/2"
             >
               <h1 className="text-5xl font-bold mb-6">Turn Your Memecoins into Virtual Pets!</h1>
-              <p className="text-xl mb-8">Create, train, and trade AI-powered virtual pets based on your favorite memecoins on the Sui blockchain.</p>
+              <p className="text-xl mb-8 text-muted-foreground">Create, train, and trade AI-powered virtual pets based on your favorite memecoins on the Sui blockchain.</p>
 
               <div className="flex gap-4 justify-center lg:justify-start">
-                <Link href="/create-pet" className="neo-btn bg-white text-black px-6 py-3 rounded-md font-bold hover:bg-gray-100 transition-colors">
+                <Link href="/create-pet" className="neo-btn bg-primary text-primary-foreground px-6 py-3 rounded-md font-bold hover:bg-primary/90 transition-colors">
                   Create Pet
                 </Link>
-                <Link href="/marketplace" className="neo-btn bg-black text-white px-6 py-3 rounded-md font-bold hover:bg-gray-900 transition-colors">
+                <Link href="/marketplace" className="neo-btn bg-secondary text-secondary-foreground px-6 py-3 rounded-md font-bold hover:bg-secondary/90 transition-colors">
                   Browse Marketplace
                 </Link>
               </div>
@@ -50,72 +51,93 @@ export default function Home() {
             </motion.div>
           </div>
         </div>
-      </section>
-
-      {/* Features */}
-      <section className="w-full py-16 px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <FeatureCard
-            icon="🐕"
-            title="Connect Memecoin"
-            description="Link your memecoin to create a unique virtual pet with its own personality."
-          />
-          <FeatureCard
-            icon="🎮"
-            title="Train & Interact"
-            description="Chat with your pet, send it on missions, and earn rewards as it levels up."
-          />
-          <FeatureCard
-            icon="💰"
-            title="Trade & Collect"
-            description="Buy, sell, and trade MemePets in our marketplace. Build your collection!"
-          />
+        {/* Wave Divider */}
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden pointer-events-none">
+          <div className="wave-container">
+            <div className="wave wave1 bg-green-600/30 dark:bg-green-700/20"></div>
+            <div className="wave wave2 bg-green-500/20 dark:bg-green-600/10"></div>
+            <div className="wave wave3 bg-green-400/10 dark:bg-green-500/5"></div>
+          </div>
         </div>
       </section>
 
-      {/* Sample Pets */}
-      <section className="w-full py-16 px-4 bg-gray-100">
-        <h2 className="text-3xl font-bold text-center mb-12">Popular MemePets</h2>
+      {/* Features */}
+      <section className="w-full py-16 px-4 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/5 to-background dark:from-background dark:via-secondary/10 dark:to-background"></div>
+        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
+        <div className="relative z-10">
+          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
 
-        <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
-          <PetCard
-            name="Doggo"
-            type="Dog"
-            level={12}
-            image="/pets/doggo.jpg"
-            background="bg-gradient-to-r from-yellow-300 to-amber-500"
-          />
-          <PetCard
-            name="Meowster"
-            type="Cat"
-            level={8}
-            image="/pets/meowster.jpg"
-            background="bg-gradient-to-r from-blue-300 to-indigo-500"
-          />
-          <PetCard
-            name="Bubbles"
-            type="Fish"
-            level={5}
-            image="/pets/fish_bubbles.jpg"
-            background="bg-gradient-to-r from-green-300 to-teal-500 rounded-xl"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <FeatureCard
+              icon="🐕"
+              title="Connect Memecoin"
+              description="Link your memecoin to create a unique virtual pet with its own personality."
+            />
+            <FeatureCard
+              icon="🎮"
+              title="Train & Interact"
+              description="Chat with your pet, send it on missions, and earn rewards as it levels up."
+            />
+            <FeatureCard
+              icon="💰"
+              title="Trade & Collect"
+              description="Buy, sell, and trade MemePets in our marketplace. Build your collection!"
+            />
+          </div>
+        </div>
+        {/* Section Divider */}
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-500/50 to-transparent dark:via-green-600/50"></div>
+      </section>
+
+      {/* Sample Pets */}
+      <section className="w-full py-16 px-4 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-muted/50 via-accent/5 to-muted/50 dark:from-muted/30 dark:via-accent/10 dark:to-muted/30"></div>
+        <div className="absolute inset-0 bg-dots-pattern opacity-5 pointer-events-none"></div>
+        <div className="relative z-10">
+          <h2 className="text-3xl font-bold text-center mb-12">Popular MemePets</h2>
+
+          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+            <PetCard
+              name="Doggo"
+              type="Dog"
+              level={12}
+              image="/pets/doggo.jpg"
+              background="bg-gradient-purple"
+            />
+            <PetCard
+              name="Meowster"
+              type="Cat"
+              level={8}
+              image="/pets/meowster.jpg"
+              background="bg-gradient-blue"
+            />
+            <PetCard
+              name="Bubbles"
+              type="Fish"
+              level={5}
+              image="/pets/fish_bubbles.jpg"
+              background="bg-gradient-green"
+            />
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="w-full bg-black text-white py-8 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-4 md:mb-0">
-            <h3 className="text-xl font-bold">MemePet</h3>
-            <p>© 2025 MemePet. All rights reserved.</p>
-          </div>
+      <footer className="w-full relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-card via-card/95 to-card dark:from-card dark:via-card/95 dark:to-card"></div>
+        <div className="relative z-10 py-8 px-4">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
+              <h3 className="text-xl font-bold">MemePet</h3>
+              <p className="text-muted-foreground">© 2025 MemePet. All rights reserved.</p>
+            </div>
 
-          <div className="flex gap-6">
-            <Link href="#" className="hover:text-gray-300">Terms</Link>
-            <Link href="#" className="hover:text-gray-300">Privacy</Link>
-            <Link href="#" className="hover:text-gray-300">Docs</Link>
+            <div className="flex gap-6">
+              <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+              <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
+              <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Docs</Link>
+            </div>
           </div>
         </div>
       </footer>
@@ -127,11 +149,11 @@ const FeatureCard = ({ icon, title, description }: { icon: string, title: string
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="bg-white p-6 rounded-[10px] neo-brutalism-shadow"
+      className="bg-card text-card-foreground p-6 rounded-[10px] neo-brutalism-shadow"
     >
       <div className="text-4xl mb-4">{icon}</div>
       <h3 className="text-3xl font-bold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <p className="text-muted-foreground">{description}</p>
     </motion.div>
   );
 };
@@ -156,9 +178,9 @@ const PetCard = ({ name, type, level, image, background }: {
           className="object-contain floating rounded-lg"
         />
       </div>
-      <h3 className="text-xl font-bold text-white mb-1">{name}</h3>
-      <p className="text-white opacity-80 mb-2">Type: {type}</p>
-      <div className="bg-white/20 px-3 py-1 rounded-full text-white text-sm">
+      <h3 className="text-xl font-bold text-primary-foreground mb-1">{name}</h3>
+      <p className="text-primary-foreground/80 mb-2">Type: {type}</p>
+      <div className="bg-primary-foreground/20 px-3 py-1 rounded-full text-primary-foreground text-sm">
         Level {level}
       </div>
     </motion.div>
