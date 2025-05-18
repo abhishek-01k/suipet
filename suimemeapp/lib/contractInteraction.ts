@@ -52,6 +52,13 @@ export interface SaveChatMessageParams {
   timestamp: number;
 }
 
+// Add this new interface for pet evolution
+export interface PetEvolutionParams {
+  petId: string;
+  currentStage: number;
+  nextStage: number;
+}
+
 /**
  * Creates a transaction to mint a new pet
  */
@@ -257,6 +264,31 @@ export function saveChatMessageTransaction(params: SaveChatMessageParams): Trans
       tx.pure(message),
       tx.pure(isFromPet),
       tx.pure(timestamp.toString()),
+    ],
+  });
+  
+  return tx;
+}
+
+/**
+ * Creates a transaction for evolving a pet to the next stage
+ */
+export function petEvolutionTransaction(params: PetEvolutionParams): TransactionBlock {
+  const { petId, currentStage, nextStage } = params;
+  
+  const tx = new TransactionBlock();
+  
+  // Get the pet object
+  const pet = tx.object(petId);
+  const clock = tx.object(CLOCK_OBJECT_ID);
+  
+  // Call the evolve_pet function
+  tx.moveCall({
+    target: `${PACKAGE_ID}::memepet::evolve_pet`,
+    arguments: [
+      pet,
+      tx.pure(nextStage),
+      clock,
     ],
   });
   
