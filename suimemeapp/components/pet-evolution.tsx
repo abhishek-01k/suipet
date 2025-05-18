@@ -3,6 +3,10 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from './ui/8bit/button';
 import { Progress } from './ui/8bit/progress';
+import { toast } from 'react-toastify';
+import { useWallet } from '@/hooks/useWallet';
+// Note: we would need to add this function to contractInteraction.ts
+import { petEvolutionTransaction } from '@/lib/contractInteraction';
 
 interface PetEvolutionProps {
   petId: string;
@@ -51,7 +55,7 @@ export default function PetEvolution({
   petMemecoin,
   onEvolve 
 }: PetEvolutionProps) {
-  const [isEvolving, setIsEvolving] = useState(false);
+  const { executeTransaction, isTransacting } = useWallet();
   
   // Get the current and next evolution stages
   const evolutionStages = EVOLUTION_STAGES[petType as keyof typeof EVOLUTION_STAGES] || DEFAULT_EVOLUTION;
@@ -74,13 +78,26 @@ export default function PetEvolution({
   const handleEvolve = async () => {
     if (!canEvolve) return;
     
-    setIsEvolving(true);
-    
-    // In a real implementation, this would call the contract to evolve the pet
-    setTimeout(() => {
-      setIsEvolving(false);
-      if (onEvolve) onEvolve();
-    }, 2000);
+    try {
+      // Create the evolution transaction
+      // Note: This function needs to be added to contractInteraction.ts
+      const tx = petEvolutionTransaction({
+        petId,
+        currentStage,
+        nextStage: nextStage || 0
+      });
+      
+      // Execute the transaction
+      const result = await executeTransaction(tx);
+      
+      if (result) {
+        toast.success(`${petName} has evolved to ${nextEvolution?.name}!`);
+        if (onEvolve) onEvolve();
+      }
+    } catch (error) {
+      console.error("Error evolving pet:", error);
+      toast.error(`Evolution failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
   };
   
   return (
@@ -124,10 +141,10 @@ export default function PetEvolution({
               
               <Button
                 onClick={handleEvolve}
-                disabled={!canEvolve || isEvolving}
+                disabled={!canEvolve || isTransacting}
                 className={`w-full ${canEvolve ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-gray-300'}`}
               >
-                {isEvolving ? 'Evolving...' : canEvolve ? 'Evolve Now!' : `Reach Level ${nextEvolution?.requiredLevel} to Evolve`}
+                {isTransacting ? 'Evolving...' : canEvolve ? 'Evolve Now!' : `Reach Level ${nextEvolution?.requiredLevel} to Evolve`}
               </Button>
               
               {canEvolve && (

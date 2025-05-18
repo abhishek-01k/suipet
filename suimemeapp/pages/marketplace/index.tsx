@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,139 +8,241 @@ import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { Button } from "@/components/ui/8bit/button";
 import { Card } from "@/components/ui/8bit/card";
 import { Input } from "@/components/ui/8bit/input";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 import MarketplaceListing from "@/components/marketplace-listing";
+import { useWallet } from "@/hooks/useWallet";
+import { 
+  listPetTransaction, 
+  buyPetTransaction, 
+  cancelListingTransaction, 
+  PACKAGE_ID 
+} from "@/lib/contractInteraction";
 
-// Mock marketplace data
-const MOCK_LISTINGS = [
-  {
-    id: "0x789",
-    pet: {
-      id: "0xabc",
-      name: "SuperDoge",
-      type: 0,
-      level: 8,
-      memecoin: {
-        name: "Dogecoin",
-        symbol: "DOGE",
-        image: "/sample/doge.png"
-      }
-    },
-    price: 0.5, // In SUI
-    seller: "0x123456"
-  },
-  {
-    id: "0xdef",
-    pet: {
-      id: "0xfed",
-      name: "MoonKitty",
-      type: 1,
-      level: 4,
-      memecoin: {
-        name: "Shiba Inu",
-        symbol: "SHIB",
-        image: "/sample/shib.png"
-      }
-    },
-    price: 0.3, // In SUI
-    seller: "0x654321"
-  },
-  {
-    id: "0x111",
-    pet: {
-      id: "0x222",
-      name: "BubbleFish",
-      type: 2,
-      level: 6,
-      memecoin: {
-        name: "Pepe",
-        symbol: "PEPE",
-        image: "/sample/pepe.png"
-      }
-    },
-    price: 0.8, // In SUI
-    seller: "0x789012"
-  }
-];
+// Type definitions for our marketplace
+interface Pet {
+  id: string;
+  name: string;
+  type: number;
+  level: number;
+  memecoin: {
+    name: string;
+    symbol: string;
+    image: string;
+  };
+}
 
-// Mock my pet data (for listing)
-const MY_PETS = [
-  {
-    id: "0x123",
-    name: "Doggo",
-    type: 0,
-    level: 5,
-    memecoin: {
-      name: "Dogecoin",
-      symbol: "DOGE",
-      image: "/sample/doge.png"
-    }
-  },
-  {
-    id: "0x456",
-    name: "Kitty",
-    type: 1,
-    level: 3,
-    memecoin: {
-      name: "Shiba Inu",
-      symbol: "SHIB",
-      image: "/sample/shib.png"
-    }
-  }
-];
+interface Listing {
+  id: string;
+  pet: Pet;
+  price: number;
+  seller: string;
+}
 
 export default function Marketplace() {
-  const [listings, setListings] = useState(MOCK_LISTINGS);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [myPets, setMyPets] = useState<Pet[]>([]);
   const [isListModalOpen, setIsListModalOpen] = useState(false);
-  const [selectedPet, setSelectedPet] = useState<any>(null);
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [price, setPrice] = useState("");
-  const [isListing, setIsListing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
+  const { executeTransaction, isTransacting } = useWallet();
   
-  const handleBuy = (listingId: string) => {
-    if (!account) return;
+  // Fetch listings and pets
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!account) {
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        setIsLoading(true);
+        
+        // Get marketplace listings
+        const listingsResponse = await suiClient.getOwnedObjects({
+          owner: PACKAGE_ID, // The marketplace contract owns the listings
+          options: { showContent: true, showDisplay: true },
+          filter: { StructType: `${PACKAGE_ID}::pet_market::Listing` }
+        });
+        
+        // Process listings
+        const marketListings = await Promise.all(listingsResponse.data.map(async (obj) => {
+          if (!obj.data?.content?.fields) return null;
+          
+          const fields = obj.data.content.fields;
+          
+          // Get pet object
+          const petObjectId = fields.pet_id;
+          const petResponse = await suiClient.getObject({
+            id: petObjectId,
+            options: { showContent: true, showDisplay: true }
+          });
+          
+          if (!petResponse.data?.content?.fields) return null;
+          
+          const petFields = petResponse.data.content.fields;
+          const memecoinAddress = petFields.memecoin_address;
+          
+          // You would normally fetch memecoin details from your database or constants
+          const memecoin = {
+            name: petFields.memecoin_name || "Unknown",
+            symbol: petFields.memecoin_symbol || "UNKNOWN",
+            image: petFields.image_url || "/sample/default.png"
+          };
+          
+          return {
+            id: obj.data.objectId,
+            pet: {
+              id: petObjectId,
+              name: petFields.name,
+              type: Number(petFields.pet_type),
+              level: Number(petFields.level),
+              memecoin
+            },
+            price: Number(fields.price) / 1_000_000_000, // Convert from MIST to SUI
+            seller: fields.seller
+          };
+        }));
+        
+        // Filter out null values
+        const validListings = marketListings.filter(listing => listing !== null) as Listing[];
+        setListings(validListings);
+        
+        // Get user's pets that aren't listed
+        const userPetsResponse = await suiClient.getOwnedObjects({
+          owner: account.address,
+          options: { showContent: true, showDisplay: true },
+          filter: { StructType: `${PACKAGE_ID}::memepet::Pet` }
+        });
+        
+        const pets = userPetsResponse.data.map(obj => {
+          if (!obj.data?.content?.fields) return null;
+          
+          const fields = obj.data.content.fields;
+          const memecoinAddress = fields.memecoin_address;
+          
+          // You would fetch these details from your memecoin constants
+          const memecoin = {
+            name: fields.memecoin_name || "Unknown",
+            symbol: fields.memecoin_symbol || "UNKNOWN",
+            image: fields.image_url || "/sample/default.png"
+          };
+          
+          return {
+            id: obj.data.objectId,
+            name: fields.name,
+            type: Number(fields.pet_type),
+            level: Number(fields.level),
+            memecoin
+          };
+        }).filter(pet => pet !== null) as Pet[];
+        
+        setMyPets(pets);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching marketplace data:", error);
+        toast.error("Failed to load marketplace data");
+        setIsLoading(false);
+      }
+    };
     
-    // In a real app, this would call the smart contract
-    console.log(`Buying pet from listing ${listingId}`);
-    
-    // Mock removing the listing after purchase
-    setListings(listings.filter(listing => listing.id !== listingId));
-  };
+    fetchData();
+  }, [account, suiClient]);
   
-  const handleList = async () => {
-    if (!account || !selectedPet || !price) return;
-    
-    const priceValue = parseFloat(price);
-    if (isNaN(priceValue) || priceValue <= 0) {
-      alert("Please enter a valid price");
+  const handleBuy = async (listingId: string) => {
+    if (!account) {
+      toast.error("Please connect your wallet first");
       return;
     }
     
-    setIsListing(true);
+    try {
+      // Find the listing to get the price
+      const listing = listings.find(l => l.id === listingId);
+      if (!listing) {
+        toast.error("Listing not found");
+        return;
+      }
+      
+      // Create transaction
+      const tx = buyPetTransaction({
+        listingId,
+        price: listing.price
+      });
+      
+      // Execute transaction
+      const result = await executeTransaction(tx);
+      
+      if (result) {
+        toast.success("Pet purchased successfully!");
+        // Update listings by removing the bought listing
+        setListings(listings.filter(l => l.id !== listingId));
+      }
+    } catch (error) {
+      console.error("Error buying pet:", error);
+      toast.error(`Failed to buy pet: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+  
+  const handleListPet = async () => {
+    if (!account || !selectedPet || !price) {
+      toast.error("Please select a pet and enter a price");
+      return;
+    }
+    
+    const priceValue = parseFloat(price);
+    if (isNaN(priceValue) || priceValue <= 0) {
+      toast.error("Please enter a valid price");
+      return;
+    }
     
     try {
-      // In a real app, this would call the smart contract
-      console.log(`Listing pet ${selectedPet.name} for ${price} SUI`);
+      // Create listing transaction
+      const tx = listPetTransaction({
+        petId: selectedPet.id,
+        price: priceValue
+      });
       
-      // Mock adding a new listing
-      const newListing = {
-        id: `0x${Math.floor(Math.random() * 1000000).toString(16)}`,
-        pet: selectedPet,
-        price: priceValue,
-        seller: account.address
-      };
+      // Execute transaction
+      const result = await executeTransaction(tx);
       
-      setListings([...listings, newListing]);
-      setIsListModalOpen(false);
-      setSelectedPet(null);
-      setPrice("");
+      if (result) {
+        toast.success("Pet listed successfully!");
+        setIsListModalOpen(false);
+        setSelectedPet(null);
+        setPrice("");
+        
+        // You would typically refetch the data here
+        // For now, we'll just remove the pet from myPets
+        setMyPets(myPets.filter(p => p.id !== selectedPet.id));
+      }
     } catch (error) {
       console.error("Error listing pet:", error);
-      alert("Failed to list pet. See console for details.");
-    } finally {
-      setIsListing(false);
+      toast.error(`Failed to list pet: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  };
+  
+  const handleCancelListing = async (listingId: string) => {
+    try {
+      // Create cancel listing transaction
+      const tx = cancelListingTransaction(listingId);
+      
+      // Execute transaction
+      const result = await executeTransaction(tx);
+      
+      if (result) {
+        toast.success("Listing cancelled successfully!");
+        // Update listings by removing the cancelled listing
+        setListings(listings.filter(l => l.id !== listingId));
+      }
+    } catch (error) {
+      console.error("Error cancelling listing:", error);
+      toast.error(`Failed to cancel listing: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   };
   
@@ -211,11 +313,8 @@ export default function Marketplace() {
                   listing={listing}
                   onBuy={handleBuy}
                   isCurrentUserSeller={account?.address === listing.seller}
-                  onCancel={(listingId: string) => {
-                    // Remove the listing (in a real app, would call contract)
-                    setListings(listings.filter(l => l.id !== listingId));
-                  }}
-                  isLoading={isListing}
+                  onCancel={handleCancelListing}
+                  isLoading={isLoading}
                 />
               ))
             ) : (
@@ -234,7 +333,7 @@ export default function Marketplace() {
           <Card className="w-full max-w-md bg-white rounded-lg p-6">
             <h2 className="text-2xl font-bold mb-6">List a Pet for Sale</h2>
             
-            {MY_PETS.length === 0 ? (
+            {myPets.length === 0 ? (
               <div className="text-center py-8">
                 <p className="mb-4">You don't have any pets available to list.</p>
                 <Link href="/create-pet">
@@ -246,7 +345,7 @@ export default function Marketplace() {
                 <div className="mb-6">
                   <label className="block mb-2 font-medium">Select Pet</label>
                   <div className="grid grid-cols-1 gap-2">
-                    {MY_PETS.map((pet) => (
+                    {myPets.map((pet) => (
                       <button
                         key={pet.id}
                         type="button"
@@ -284,8 +383,8 @@ export default function Marketplace() {
                 </div>
                 
                 <div className="flex gap-4">
-                  <Button onClick={handleList} disabled={!selectedPet || !price || isListing} className="flex-1">
-                    {isListing ? "Listing..." : "List Pet"}
+                  <Button onClick={handleListPet} disabled={!selectedPet || !price || isLoading} className="flex-1">
+                    {isLoading ? "Listing..." : "List Pet"}
                   </Button>
                   <Button onClick={() => setIsListModalOpen(false)} variant="outline" className="flex-1">
                     Cancel

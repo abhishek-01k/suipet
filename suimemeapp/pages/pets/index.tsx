@@ -70,7 +70,6 @@ export default function MyPets() {
         // For a quick demo, we'll still use mock data but simulate a real fetch
         // In production, uncomment and use this code:
         
-        /* 
         const objectsResponse = await suiClient.getOwnedObjects({
           owner: account.address,
           options: { showContent: true, showDisplay: true },
@@ -129,48 +128,12 @@ export default function MyPets() {
         
         const filteredPets = userPets.filter(pet => pet !== null);
         setPets(filteredPets);
-        */
+        setLoading(false);
         
-        // Mock data for development - remove in production
-        setTimeout(() => {
-          const mockPets = [
-            {
-              id: "0x123",
-              name: "Doggo",
-              type: 0,
-              level: 5,
-              experience: 230,
-              health: 80,
-              happiness: 90,
-              memecoin: {
-                name: "UNI",
-                symbol: "UNI",
-                image: "/sample/doge.png"
-              },
-              onMission: false
-            },
-            {
-              id: "0x456",
-              name: "Kitty",
-              type: 1,
-              level: 3,
-              experience: 120,
-              health: 70,
-              happiness: 60,
-              memecoin: {
-                name: "LOFI",
-                symbol: "LOFI",
-                image: "/sample/shib.png"
-              },
-              onMission: true,
-              missionEndTime: Date.now() + 300000, // 5 minutes from now
-              missionId: "0x789"
-            },
-          ];
-          setPets(mockPets);
-          setLoading(false);
-        }, 1000);
-        
+        // If we have pets and none selected, select the first one
+        if (filteredPets.length > 0 && !selectedPet) {
+          setSelectedPet(filteredPets[0]);
+        }
       } catch (error) {
         console.error("Error fetching pets:", error);
         toast.error("Failed to fetch your pets");

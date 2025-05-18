@@ -4,16 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ConnectButton, useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-// Mock memecoin data
-const MEMECOINS = [
-  { name: "Dogecoin", symbol: "DOGE", address: "0x1234", image: "/sample/doge.png" },
-  { name: "Shiba Inu", symbol: "SHIB", address: "0x5678", image: "/sample/shib.png" },
-  { name: "Pepe", symbol: "PEPE", address: "0x9abc", image: "/sample/pepe.png" },
-  { name: "Floki", symbol: "FLOKI", address: "0xdef0", image: "/sample/floki.png" },
-];
+// Import real memecoins and contract interactions
+import { SUPPORTED_MEMECOINS, Memecoin } from "@/constants/memecoins";
+import { createPetTransaction } from "@/lib/contractInteraction";
+import { useWallet } from "@/hooks/useWallet";
 
 // Pet types
 const PET_TYPES = [
@@ -25,16 +23,17 @@ const PET_TYPES = [
 
 export default function CreatePet() {
   const [step, setStep] = useState(1);
-  const [selectedMemecoin, setSelectedMemecoin] = useState<any>(null);
+  const [selectedMemecoin, setSelectedMemecoin] = useState<Memecoin | null>(null);
   const [petName, setPetName] = useState("");
   const [petType, setPetType] = useState(0);
   const [isCreating, setIsCreating] = useState(false);
   
   const account = useCurrentAccount();
-  const suiClient = useSuiClient();
+  const { executeTransaction, isTransacting, error } = useWallet();
   
-  const handleSelectMemecoin = (memecoin: any) => {
+  const handleSelectMemecoin = (memecoin: Memecoin) => {
     setSelectedMemecoin(memecoin);
+    setPetType(memecoin.petType); // Set default pet type based on memecoin
     setStep(2);
   };
   
@@ -46,36 +45,29 @@ export default function CreatePet() {
     setIsCreating(true);
     
     try {
-      // In a real app, we would connect to the deployed contract
-      const packageId = "0x123"; // Replace with actual package ID after deployment
-      
-      // Create transaction block
-      const tx = new TransactionBlock();
-      
-      // Add SUI coin for the pet creation fee
-      const [coin] = tx.splitCoins(tx.gas, [tx.pure(100000000)]); // 0.1 SUI
-      
-      // Call the create_pet function
-      tx.moveCall({
-        target: `${packageId}::memepet::create_pet`,
-        arguments: [
-          tx.pure(petName),
-          tx.pure(petType),
-          tx.pure(selectedMemecoin.address),
-          tx.pure("https://example.com/image.png"), // Mock image URL, would be real in production
-          coin,
-        ],
+      // Create pet transaction using the real contract interaction
+      const tx = createPetTransaction({
+        name: petName,
+        petType: petType,
+        memecoinAddress: selectedMemecoin.address,
+        imageUrl: selectedMemecoin.image,
+        paymentAmount: 0.1 // 0.1 SUI fee
       });
       
-      // In a real implementation, we would use the connected wallet to sign
-      alert("In a production app, this would trigger your wallet to sign the transaction");
-      console.log("Transaction created:", tx);
+      // Execute the transaction using our custom hook
+      const result = await executeTransaction(tx);
       
-      // For demo purposes, just move to the next step
-      setStep(3);
+      if (result) {
+        console.log("Transaction successful:", result);
+        toast.success("Pet created successfully!");
+        setStep(3);
+      } else {
+        // If executeTransaction returned null, there was an error
+        toast.error(error || "Failed to create pet. Please try again.");
+      }
     } catch (error) {
       console.error("Error creating pet:", error);
-      alert("Failed to create pet. See console for details.");
+      toast.error("Failed to create pet. Please try again.");
     } finally {
       setIsCreating(false);
     }
@@ -113,7 +105,7 @@ export default function CreatePet() {
                 <p className="mb-6 text-gray-600">Choose a memecoin to transform into a virtual pet. Your pet will inherit characteristics from this coin!</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {MEMECOINS.map((coin) => (
+                  {SUPPORTED_MEMECOINS.map((coin) => (
                     <motion.div 
                       key={coin.symbol}
                       whileHover={{ scale: 1.03 }}
@@ -147,14 +139,15 @@ export default function CreatePet() {
                   <div className="w-full md:w-1/3 flex flex-col items-center">
                     <div className="relative w-32 h-32 mb-4">
                       <Image 
-                        src={selectedMemecoin.image}
-                        alt={selectedMemecoin.name}
+                        src={selectedMemecoin?.image || ""}
+                        alt={selectedMemecoin?.name || ""}
                         fill
                         className="object-contain"
                       />
                     </div>
-                    <h3 className="font-bold">{selectedMemecoin.name}</h3>
-                    <p className="text-sm text-gray-600 mb-4">{selectedMemecoin.symbol}</p>
+                    <h3 className="font-bold">{selectedMemecoin?.name}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{selectedMemecoin?.symbol}</p>
+                    <p className="text-xs text-gray-500 text-center mb-4">{selectedMemecoin?.description}</p>
                     
                     <button 
                       onClick={() => setStep(1)}
