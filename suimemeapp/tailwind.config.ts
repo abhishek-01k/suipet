@@ -15,6 +15,9 @@ const config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        'press-start': ['var(--font-press-start)'],
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

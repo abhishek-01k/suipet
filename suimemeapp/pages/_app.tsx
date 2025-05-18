@@ -3,7 +3,7 @@ import SuiWalletProvider from "@/context/WalletContext";
 import { type AppType } from "next/dist/shared/lib/utils";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { Inter } from "next/font/google";
+import { Press_Start_2P } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ToastContainer } from "react-toastify";
 import { AppContextProvider } from "@/context/AppContext";
@@ -15,7 +15,11 @@ import Footer from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import PwaInstallPrompt from "@/components/PwaInstallPrompt";
 
-const inter = Inter({ subsets: ["latin"] });
+const pressStart = Press_Start_2P({
+  weight: ["400"],
+  subsets: ["latin"],
+  variable: '--font-press-start',
+});
 
 const queryClient = new QueryClient();
 
@@ -34,29 +38,24 @@ const MyApp: AppType = ({ Component, pageProps }) => {
             <SuiWalletProvider>
               <AppContextProvider>
                 <TooltipProvider>
-                  <MetaTagsContainer />
-                  <Header />
-                  <Component {...pageProps} className={cn(inter.className)} />
-                  <Footer />
-                  <PwaInstallPrompt />
-                  <ToastContainer
-                    theme="dark"
-                    draggable
-                    position="bottom-right"
-                    className={"mt-20"}
-                    toastClassName={(context) =>
-                      "relative flex py-3.5 px-4 mx-4 min-h-10 mb-5 rounded-md justify-between overflow-hidden cursor-pointer bg-white/20 backdrop-blur-md"
-                    }
-                    toastStyle={{
-                      WebkitBackdropFilter: "blur(12px)",
-                    }}
-                  />
+                  <div className={`${pressStart.className} min-h-screen flex flex-col`}>
+                    <MetaTagsContainer />
+                    <Header />
+                    <Component {...pageProps} />
+                    <Footer />
+                    <PwaInstallPrompt />
+                    <ToastContainer
+                      draggable
+                      theme="dark"
+                      position="bottom-right"
+                    />
+                  </div>
                 </TooltipProvider>
               </AppContextProvider>
             </SuiWalletProvider>
           </QueryClientProvider>
         ) : (
-          <div>
+          <div className={pressStart.className}>
             <MetaTagsContainer />
           </div>
         )}

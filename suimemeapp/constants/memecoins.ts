@@ -26,7 +26,7 @@ export const SUPPORTED_MEMECOINS: Memecoin[] = [
     name: 'GLUB',
     symbol: 'GLUB',
     description: 'GLUB is an aquatic-themed memecoin on Sui. GLUB pets excel at water-based missions!',
-    image: '/memecoins/glub.png',
+    image: '/memecoins/glub.webp',
     address: '0x33fb202f090f797eab5dc35e64cffbb051341dc4df6af4c3fba685390bf94df7', // Will be updated with real address
     petType: 2 // Fish
   },
@@ -35,7 +35,7 @@ export const SUPPORTED_MEMECOINS: Memecoin[] = [
     name: 'LOFI',
     symbol: 'LOFI',
     description: 'LOFI promotes relaxation and chill vibes on Sui. LOFI pets have increased happiness regeneration!',
-    image: '/memecoins/lofi.png',
+    image: '/memecoins/lofi.webp',
     address: '0xd6918afa64d432b84b48088d165b0dda0b7459463a7d66365f7ff890cae22d2d', // Will be updated with real address
     petType: 1 // Cat
   }

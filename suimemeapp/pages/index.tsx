@@ -4,6 +4,7 @@ import { ConnectButton } from "@mysten/dapp-kit";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/8bit/button";
 
 export default function Home() {
   return (
@@ -20,15 +21,15 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="text-center lg:text-left lg:w-1/2"
             >
-              <h1 className="text-5xl font-bold mb-6">Turn Your Memecoins into Virtual Pets!</h1>
-              <p className="text-xl mb-8 text-muted-foreground">Create, train, and trade AI-powered virtual pets based on your favorite memecoins on the Sui blockchain.</p>
+              <h1 className={`text-3xl font-bold mb-6`}>Turn Your Memecoins into Virtual Pets!</h1>
+              <p className={`text-xl mb-8 text-muted-foreground`}>Create, train, and trade AI-powered virtual pets based on your favorite memecoins on the Sui blockchain.</p>
 
-              <div className="flex gap-4 justify-center lg:justify-start">
-                <Link href="/create-pet" className="neo-btn bg-primary text-primary-foreground px-6 py-3 rounded-md font-bold hover:bg-primary/90 transition-colors">
-                  Create Pet
+              <div className="flex gap-8 justify-center lg:justify-start">
+                <Link href="/create-pet" >
+                  <Button>Create Pet</Button>
                 </Link>
-                <Link href="/marketplace" className="neo-btn bg-secondary text-secondary-foreground px-6 py-3 rounded-md font-bold hover:bg-secondary/90 transition-colors">
-                  Browse Marketplace
+                <Link href="/marketplace">
+                  <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors">Browse Marketplace</Button>
                 </Link>
               </div>
             </motion.div>
@@ -123,24 +124,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-card via-card/95 to-card dark:from-card dark:via-card/95 dark:to-card"></div>
-        <div className="relative z-10 py-8 px-4">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <h3 className="text-xl font-bold">MemePet</h3>
-              <p className="text-muted-foreground">© 2025 MemePet. All rights reserved.</p>
-            </div>
-
-            <div className="flex gap-6">
-              <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
-              <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
-              <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Docs</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

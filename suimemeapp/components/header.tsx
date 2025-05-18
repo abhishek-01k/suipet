@@ -40,8 +40,8 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/pets" className=" hover:underline">My Pets</Link>
-          <Link href="/marketplace" className=" hover:underline">Marketplace</Link>
+          <Link href="/pets" className="text-sm hover:underline">My Pets</Link>
+          <Link href="/marketplace" className="text-sm hover:underline">Marketplace</Link>
           {walletAddress ? (
             <ConnectMenu walletAddress={walletAddress} suiName={suiName} />
           ) : (

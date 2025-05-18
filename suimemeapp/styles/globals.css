@@ -24,6 +24,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+    --font-press-start: 'Press Start 2P', system-ui, sans-serif;
   }
 
   .dark {
@@ -271,7 +272,7 @@ input[type="number"] {
 
 .wave1 {
   opacity: 0.8;
-  animation: wave1 30s ease-in-out infinite alternate;
+  animation: wave1 10s ease-in-out infinite alternate;
   z-index: 3;
   border-radius: 50% 50% 0 0;
   transform: translateX(0) translateZ(0) scaleY(1);
@@ -279,7 +280,7 @@ input[type="number"] {
 
 .wave2 {
   opacity: 0.6;
-  animation: wave2 40s ease-in-out infinite alternate;
+  animation: wave2 20s ease-in-out infinite alternate;
   z-index: 2;
   border-radius: 50% 50% 0 0;
   transform: translateX(0) translateZ(0) scaleY(1);
@@ -287,7 +288,7 @@ input[type="number"] {
 
 .wave3 {
   opacity: 0.4;
-  animation: wave3 50s ease-in-out infinite alternate;
+  animation: wave3 30s ease-in-out infinite alternate;
   z-index: 1;
   border-radius: 50% 50% 0 0;
   transform: translateX(0) translateZ(0) scaleY(1);
