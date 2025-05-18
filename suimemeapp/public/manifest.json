@@ -1,0 +1,16 @@
+{
+    "name": "Sui Pets",
+    "short_name": "SuiPet",
+    "icons": [
+        {
+            "src": "/public/pets/pet_logo.webp",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#FFFFFF",
+    "background_color": "#FFFFFF",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "any"
+}
