@@ -5,8 +5,8 @@ import MetaThumbnail from "/public/images/app-og-image.png";
 const MetaTagsContainer = () => {
   const router = useRouter();
   //Set your product name, description, twitter account, and metadata image path
-  const name = "Sui Dapp Scaffold";
-  const description = "Product description";
+  const name = "Sui Pets";
+  const description = "Transform memecoins into virtual pets with AI personality";
   const twitterAccount = "@yourTwitterAccount";
   const metadataImagePath = `http://localhost:3000${MetaThumbnail.src}`;
   const pathname = router.pathname;
@@ -54,6 +54,19 @@ const MetaTagsContainer = () => {
         content={metadataImagePath}
         key="twitterimage"
       />
+      
+      {/* PWA meta tags */}
+      <meta name="application-name" content={name} />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      <meta name="apple-mobile-web-app-title" content={name} />
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="theme-color" content="#FFFFFF" />
+      
+      {/* Link to manifest */}
+      <link rel="manifest" href="/manifest.json" />
+      
       {/* Favicon */}
       <link rel="shortcut icon" type="image/png" href="/favicon.png" />
       <link

@@ -13,6 +13,7 @@ import MetaTagsContainer from "@/components/containers/metaTagsContainer";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import PwaInstallPrompt from "@/components/PwaInstallPrompt";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,6 +38,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                   <Header />
                   <Component {...pageProps} className={cn(inter.className)} />
                   <Footer />
+                  <PwaInstallPrompt />
                   <ToastContainer
                     theme="dark"
                     draggable

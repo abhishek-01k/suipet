@@ -1,16 +1,25 @@
 {
     "name": "Sui Pets",
     "short_name": "SuiPet",
+    "description": "Transform memecoins into virtual pets with AI personality",
     "icons": [
         {
-            "src": "/public/pets/pet_logo.webp",
+            "src": "/pets/pet_logo.webp",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/webp",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon.ico",
+            "sizes": "64x64",
+            "type": "image/x-icon"
         }
     ],
     "theme_color": "#FFFFFF",
     "background_color": "#FFFFFF",
     "start_url": "/",
     "display": "standalone",
-    "orientation": "any"
+    "orientation": "any",
+    "scope": "/",
+    "lang": "en-US"
 }
