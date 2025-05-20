@@ -163,12 +163,12 @@ export default function PetMissions({ petId, petLevel, activeMission, onMissionC
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6"
+          className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-2xl font-bold">🎯 Active Mission</h3>
+            <h3 className="text-2xl font-bold text-foreground">🎯 Active Mission</h3>
             <div className="flex items-center gap-2">
-              <span className="text-sm bg-gray-100 px-3 py-1 rounded-full border-2 border-black">
+              <span className="text-sm bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full border-2 border-black dark:border-white text-foreground">
                 In Progress
               </span>
             </div>
@@ -235,20 +235,20 @@ export default function PetMissions({ petId, petLevel, activeMission, onMissionC
           
           <div className="grid grid-cols-3 gap-4">
             {MISSION_TYPES[activeMission.type].rewards.map((reward, index) => (
-              <div key={index} className="bg-gray-100 p-3 rounded-lg border-2 border-gray-300 text-center">
-                <div className="text-sm font-bold text-gray-700">{reward}</div>
+              <div key={index} className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 text-center">
+                <div className="text-sm font-bold text-gray-700 dark:text-gray-300">{reward}</div>
               </div>
             ))}
           </div>
         </motion.div>
       ) : (
         <div className="space-y-6">
-          <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6">
-            <h3 className="text-2xl font-bold mb-6 text-center">🌟 Choose Your Adventure</h3>
+          <div className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6">
+            <h3 className="text-2xl font-bold mb-6 text-center text-foreground">🌟 Choose Your Adventure</h3>
             
             {/* Mission Selection */}
             <div className="mb-8">
-              <h4 className="text-lg font-bold mb-4">Select Mission Type</h4>
+              <h4 className="text-lg font-bold mb-4 text-foreground">Select Mission Type</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {MISSION_TYPES.map((mission, index) => (
                   <motion.button
@@ -258,16 +258,16 @@ export default function PetMissions({ petId, petLevel, activeMission, onMissionC
                     onClick={() => setSelectedMission(mission.id)}
                     className={`p-4 rounded-lg border-4 transition-all ${
                       selectedMission === mission.id
-                        ? 'border-black bg-purple-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
-                        : 'border-gray-300 bg-white hover:border-gray-400'
+                        ? 'border-black dark:border-white bg-purple-100 dark:bg-purple-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
+                        : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500'
                     }`}
                   >
                     <div className="text-4xl mb-2">{mission.emoji}</div>
-                    <h5 className="font-bold text-lg mb-2">{mission.name}</h5>
-                    <p className="text-sm text-gray-600 mb-3">{mission.description}</p>
+                    <h5 className="font-bold text-lg mb-2 text-foreground">{mission.name}</h5>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{mission.description}</p>
                     <div className="space-y-1">
                       {mission.rewards.map((reward, idx) => (
-                        <div key={idx} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                        <div key={idx} className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-foreground">
                           {reward}
                         </div>
                       ))}
@@ -279,7 +279,7 @@ export default function PetMissions({ petId, petLevel, activeMission, onMissionC
 
             {/* Difficulty Selection */}
             <div className="mb-8">
-              <h4 className="text-lg font-bold mb-4">Choose Difficulty</h4>
+              <h4 className="text-lg font-bold mb-4 text-foreground">Choose Difficulty</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {DIFFICULTY_LEVELS.map((level) => (
                   <motion.button
@@ -290,20 +290,20 @@ export default function PetMissions({ petId, petLevel, activeMission, onMissionC
                     disabled={petLevel < level.requiredLevel}
                     className={`p-4 rounded-lg border-2 transition-all ${
                       petLevel < level.requiredLevel 
-                        ? 'border-gray-200 bg-gray-100 opacity-60 cursor-not-allowed' 
+                        ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 opacity-60 cursor-not-allowed' 
                         : selectedDifficulty === level.id 
-                          ? `border-black ${level.background} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`
-                          : `border-gray-300 ${level.background} hover:border-gray-500`
+                          ? `border-black dark:border-white ${level.background} dark:bg-green-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`
+                          : `border-gray-300 dark:border-gray-600 ${level.background} dark:bg-green-800 hover:border-gray-500 dark:hover:border-gray-400`
                     }`}
                   >
                     <div className="text-3xl mb-2">{level.emoji}</div>
-                    <div className="font-bold text-lg mb-1">{level.name}</div>
-                    <div className="text-sm text-gray-600 mb-2">{level.description}</div>
-                    <div className="text-xs bg-white/70 px-2 py-1 rounded">
+                    <div className="font-bold text-lg mb-1 text-foreground">{level.name}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">{level.description}</div>
+                    <div className="text-xs bg-white/70 dark:bg-black/30 px-2 py-1 rounded text-foreground">
                       Rewards ×{level.multiplier}
                     </div>
                     {petLevel < level.requiredLevel && (
-                      <div className="text-xs text-red-500 mt-2 font-bold">
+                      <div className="text-xs text-red-500 dark:text-red-400 mt-2 font-bold">
                         Level {level.requiredLevel} Required
                       </div>
                     )}
@@ -319,10 +319,10 @@ export default function PetMissions({ petId, petLevel, activeMission, onMissionC
                 whileTap={{ scale: 0.95 }}
                 onClick={handleStartMission}
                 disabled={petLevel < DIFFICULTY_LEVELS[selectedDifficulty].requiredLevel || isTransacting}
-                className={`px-8 py-4 rounded-lg font-bold text-lg border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                className={`px-8 py-4 rounded-lg font-bold text-lg border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all ${
                   petLevel < DIFFICULTY_LEVELS[selectedDifficulty].requiredLevel || isTransacting
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
+                    ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
                 }`}
               >
                 {isTransacting ? '🚀 Starting Mission...' : '🚀 Start Adventure!'}

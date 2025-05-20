@@ -90,8 +90,8 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
   
   return (
     <>
-      <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
-        <h3 className="text-xl font-bold mb-4">Interact with Your Pet</h3>
+      <div className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6 mb-6">
+        <h3 className="text-xl font-bold mb-4 text-foreground text-center">Interact with Your Pet</h3>
         
         <div className="grid grid-cols-3 gap-4">
           <motion.button
@@ -100,10 +100,10 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
             onClick={() => handleInteraction('feed')}
             disabled={isTransacting}
             className={`
-              py-3 px-4 border-4 border-black rounded-lg font-bold transition-all
+              py-3 px-4 border-4 border-black dark:border-white rounded-lg font-bold transition-all
               ${isTransacting && interactionType === 'feed' 
-                ? 'bg-gray-200 opacity-70' 
-                : 'bg-green-400 hover:bg-green-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'}
+                ? 'bg-gray-200 dark:bg-gray-700 opacity-70' 
+                : 'bg-green-400 hover:bg-green-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'}
             `}
           >
             {isTransacting && interactionType === 'feed' ? 'Feeding...' : '🍖 Feed'}
@@ -115,10 +115,10 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
             onClick={() => handleInteraction('play')}
             disabled={isTransacting}
             className={`
-              py-3 px-4 border-4 border-black rounded-lg font-bold transition-all
+              py-3 px-4 border-4 border-black dark:border-white rounded-lg font-bold transition-all
               ${isTransacting && interactionType === 'play' 
-                ? 'bg-gray-200 opacity-70' 
-                : 'bg-blue-400 hover:bg-blue-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'}
+                ? 'bg-gray-200 dark:bg-gray-700 opacity-70' 
+                : 'bg-blue-400 hover:bg-blue-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'}
             `}
           >
             {isTransacting && interactionType === 'play' ? 'Playing...' : '🎾 Play'}
@@ -130,10 +130,10 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
             onClick={() => handleInteraction('train')}
             disabled={isTransacting}
             className={`
-              py-3 px-4 border-4 border-black rounded-lg font-bold transition-all
+              py-3 px-4 border-4 border-black dark:border-white rounded-lg font-bold transition-all
               ${isTransacting && interactionType === 'train' 
-                ? 'bg-gray-200 opacity-70' 
-                : 'bg-purple-400 hover:bg-purple-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'}
+                ? 'bg-gray-200 dark:bg-gray-700 opacity-70' 
+                : 'bg-purple-400 hover:bg-purple-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'}
             `}
           >
             {isTransacting && interactionType === 'train' ? 'Training...' : '💪 Train'}
@@ -141,13 +141,13 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
         </div>
         
         <div className="mt-4 text-sm space-y-2">
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             <strong>Feed:</strong> Increases health but gives less experience.
           </p>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             <strong>Play:</strong> Increases happiness and gives moderate experience.
           </p>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             <strong>Train:</strong> Requires exercise verification! Gives the most experience but decreases health and happiness initially.
           </p>
         </div>
@@ -161,24 +161,24 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">💪 Training Verification</h2>
+                <h2 className="text-2xl font-bold text-foreground">💪 Training Verification</h2>
                 <button
                   onClick={() => {
                     setShowTrainingModal(false);
                     setTrainingCompleted(false);
                   }}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-2xl"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="mb-6 p-4 bg-purple-100 border-2 border-purple-300 rounded-lg">
-                <h3 className="font-bold text-lg mb-2">🎯 Exercise Challenge</h3>
-                <p className="text-gray-700">
+              <div className="mb-6 p-4 bg-purple-100 dark:bg-purple-900 border-2 border-purple-300 dark:border-purple-700 rounded-lg">
+                <h3 className="font-bold text-lg mb-2 text-foreground">🎯 Exercise Challenge</h3>
+                <p className="text-gray-700 dark:text-gray-300">
                   To train your pet, you must complete a real workout! Choose an exercise and demonstrate proper form.
                   Your pet learns by watching you get stronger! 💪
                 </p>
@@ -186,7 +186,7 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
 
               {/* Exercise Selection */}
               <div className="mb-6">
-                <h4 className="font-bold text-lg mb-3">Choose Your Exercise:</h4>
+                <h4 className="font-bold text-lg mb-3 text-foreground">Choose Your Exercise:</h4>
                 <div className="grid grid-cols-3 gap-4">
                   {[
                     { key: 'bicep-curl', name: 'Bicep Curls', emoji: '💪', reps: 10 },
@@ -200,20 +200,20 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
                       onClick={() => setCurrentExercise(exercise.key as any)}
                       className={`p-4 border-2 rounded-lg transition-all ${
                         currentExercise === exercise.key
-                          ? 'border-purple-500 bg-purple-100 shadow-[4px_4px_0px_0px_rgba(147,51,234,0.5)]'
-                          : 'border-gray-300 bg-white hover:border-purple-300'
+                          ? 'border-purple-500 bg-purple-100 dark:bg-purple-900 shadow-[4px_4px_0px_0px_rgba(147,51,234,0.5)]'
+                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-purple-300 dark:hover:border-purple-600'
                       }`}
                     >
                       <div className="text-3xl mb-2">{exercise.emoji}</div>
-                      <div className="font-bold">{exercise.name}</div>
-                      <div className="text-sm text-gray-600">{exercise.reps} reps required</div>
+                      <div className="font-bold text-foreground">{exercise.name}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">{exercise.reps} reps required</div>
                     </motion.button>
                   ))}
                 </div>
               </div>
 
               {/* Live Detection Component */}
-              <div className="mb-6 border-2 border-gray-300 rounded-lg overflow-hidden">
+              <div className="mb-6 border-2 border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
                 <LiveDetection 
                   exerciseSubType={currentExercise}
                   onExerciseComplete={onExerciseComplete}
@@ -228,13 +228,13 @@ export default function PetInteraction({ petId, onInteractionComplete }: PetInte
                     whileTap={{ scale: 0.95 }}
                     onClick={handleTrainingComplete}
                     disabled={isTransacting}
-                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all"
                   >
                     {isTransacting ? '🏆 Processing Training...' : '🏆 Complete Training!'}
                   </motion.button>
                 ) : (
-                  <div className="text-center p-4 bg-yellow-100 border-2 border-yellow-400 rounded-lg">
-                    <p className="font-bold text-yellow-800">
+                  <div className="text-center p-4 bg-yellow-100 dark:bg-yellow-900 border-2 border-yellow-400 dark:border-yellow-600 rounded-lg">
+                    <p className="font-bold text-yellow-800 dark:text-yellow-200">
                       Complete the exercise above to unlock training! 💪
                     </p>
                   </div>

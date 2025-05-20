@@ -202,8 +202,8 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
   if (!account) {
     return (
       <Card className="p-8 text-center">
-        <h2 className="text-2xl font-bold mb-4">🏆 Meme Competitions</h2>
-        <p className="mb-6 text-gray-600">
+        <h2 className="text-2xl font-bold mb-4 text-foreground">🏆 Meme Competitions</h2>
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
           Connect your wallet to participate in weekly meme competitions and win prizes!
         </p>
       </Card>
@@ -213,8 +213,8 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-4">🏆 Weekly Meme Competitions</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <h2 className="text-3xl font-bold mb-4 text-foreground">🏆 Weekly Meme Competitions</h2>
+        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           Show off your creativity! Participate in memecoin-specific competitions, create viral memes, 
           and compete for prize pools. Only pet owners of the specified memecoin can participate!
         </p>
@@ -225,9 +225,9 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
           {[1, 2, 3].map(i => (
             <Card key={i} className="p-6">
               <div className="animate-pulse space-y-4">
-                <div className="h-6 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-20 bg-gray-200 rounded"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             </Card>
           ))}
@@ -245,7 +245,7 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
                 whileHover={{ scale: 1.02, y: -4 }}
                 className="relative"
               >
-                <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white overflow-hidden h-full">
+                <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-gray-800 overflow-hidden h-full">
                   {/* Competition Status Badge */}
                   <div className="absolute top-4 right-4 z-10">
                     {competition.userParticipated ? (
@@ -269,34 +269,34 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
                         className="rounded-full"
                       />
                       <div>
-                        <h3 className="font-bold text-lg">{competition.title}</h3>
-                        <p className="text-sm text-gray-600">{competition.memecoinSymbol} Competition</p>
+                        <h3 className="font-bold text-lg text-foreground">{competition.title}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{competition.memecoinSymbol} Competition</p>
                       </div>
                     </div>
                   </CardHeader>
 
                   <CardContent className="space-y-4">
-                    <p className="text-gray-700 text-sm leading-relaxed">
+                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                       {competition.description}
                     </p>
 
                     {/* Competition Stats */}
-                    <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg border-2 border-gray-200">
+                    <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 border-gray-200 dark:border-gray-600">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-purple-600">{competition.prizePool}</div>
-                        <div className="text-xs text-gray-600">{competition.memecoinSymbol} Prize Pool</div>
+                        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{competition.prizePool}</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">{competition.memecoinSymbol} Prize Pool</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">{competition.participants}</div>
-                        <div className="text-xs text-gray-600">Participants</div>
+                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{competition.participants}</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Participants</div>
                       </div>
                     </div>
 
                     {/* Time Remaining */}
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="font-medium">Time Remaining:</span>
-                        <span className={timeRemaining.expired ? 'text-red-500' : 'text-green-600'}>
+                        <span className="font-medium text-foreground">Time Remaining:</span>
+                        <span className={timeRemaining.expired ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'}>
                           {timeRemaining.expired 
                             ? 'Expired' 
                             : `${timeRemaining.days}d ${timeRemaining.hours}h ${timeRemaining.minutes}m`
@@ -305,12 +305,12 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
                       </div>
                       <Progress 
                         value={progressPercentage}
-                        className="h-2 border border-gray-300"
+                        className="h-2 border border-gray-300 dark:border-gray-600"
                       />
                     </div>
 
                     {/* Entry Requirements */}
-                    <div className="text-xs text-gray-600 bg-yellow-50 p-2 rounded border border-yellow-200">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 bg-yellow-50 dark:bg-yellow-900 p-2 rounded border border-yellow-200 dark:border-yellow-700">
                       <strong>Entry Fee:</strong> {competition.entryFee} {competition.memecoinSymbol}
                       <br />
                       <strong>Requirement:</strong> Own a {competition.memecoinSymbol} pet
@@ -318,11 +318,11 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
 
                     {/* Eligible Pets Indicator */}
                     {eligiblePets.length > 0 ? (
-                      <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
+                      <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900 p-2 rounded border border-green-200 dark:border-green-700">
                         ✓ You have {eligiblePets.length} eligible {competition.memecoinSymbol} pet(s)
                       </div>
                     ) : (
-                      <div className="text-xs text-red-600 bg-red-50 p-2 rounded border border-red-200">
+                      <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900 p-2 rounded border border-red-200 dark:border-red-700">
                         ✗ You need a {competition.memecoinSymbol} pet to participate
                       </div>
                     )}
@@ -338,7 +338,7 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
                       }
                       className={`w-full font-bold ${
                         competition.userParticipated 
-                          ? 'bg-gray-300 text-gray-600' 
+                          ? 'bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400' 
                           : eligiblePets.length === 0
                             ? 'bg-red-400 text-white'
                             : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600'
@@ -369,13 +369,13 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 w-full max-w-2xl"
+              className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6 w-full max-w-2xl"
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">🎨 Submit Your Meme</h2>
+                <h2 className="text-2xl font-bold text-foreground">🎨 Submit Your Meme</h2>
                 <button
                   onClick={() => setShowSubmissionModal(false)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-2xl"
                 >
                   ✕
                 </button>
@@ -383,18 +383,18 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
 
               <div className="space-y-6">
                 {/* Competition Info */}
-                <div className="p-4 bg-purple-100 border-2 border-purple-300 rounded-lg">
-                  <h3 className="font-bold text-lg mb-2">{selectedCompetition.title}</h3>
-                  <p className="text-gray-700 mb-3">{selectedCompetition.description}</p>
-                  <div className="text-sm">
+                <div className="p-4 bg-purple-100 dark:bg-purple-900 border-2 border-purple-300 dark:border-purple-700 rounded-lg">
+                  <h3 className="font-bold text-lg mb-2 text-foreground">{selectedCompetition.title}</h3>
+                  <p className="text-gray-700 dark:text-gray-300 mb-3">{selectedCompetition.description}</p>
+                  <div className="text-sm text-foreground">
                     <strong>Entry Fee:</strong> {selectedCompetition.entryFee} {selectedCompetition.memecoinSymbol}
                   </div>
                 </div>
 
                 {/* Instructions */}
-                <div className="p-4 bg-blue-100 border-2 border-blue-300 rounded-lg">
-                  <h4 className="font-bold mb-2">📝 How to Participate:</h4>
-                  <ol className="list-decimal list-inside text-sm space-y-1">
+                <div className="p-4 bg-blue-100 dark:bg-blue-900 border-2 border-blue-300 dark:border-blue-700 rounded-lg">
+                  <h4 className="font-bold mb-2 text-foreground">📝 How to Participate:</h4>
+                  <ol className="list-decimal list-inside text-sm space-y-1 text-gray-700 dark:text-gray-300">
                     <li>Create an awesome meme featuring {selectedCompetition.memecoinSymbol}</li>
                     <li>Post it on Twitter/X with hashtags #{selectedCompetition.memecoinSymbol}Meme #MemePetContest</li>
                     <li>Copy the tweet URL and paste it below</li>
@@ -404,19 +404,19 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
 
                 {/* Twitter URL Input */}
                 <div>
-                  <label className="block font-bold mb-2">Twitter/X Post URL *</label>
+                  <label className="block font-bold mb-2 text-foreground">Twitter/X Post URL *</label>
                   <input
                     type="url"
                     value={twitterUrl}
                     onChange={(e) => setTwitterUrl(e.target.value)}
                     placeholder="https://twitter.com/yourhandle/status/..."
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 outline-none"
+                    className="w-full p-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:border-purple-500 outline-none bg-white dark:bg-gray-800 text-foreground"
                   />
                 </div>
 
                 {/* Selected Pet Display */}
                 {selectedPet && (
-                  <div className="p-3 bg-gray-100 border-2 border-gray-300 rounded-lg">
+                  <div className="p-3 bg-gray-100 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg">
                     <div className="flex items-center gap-3">
                       <Image 
                         src={selectedPet.memecoin.image}
@@ -426,8 +426,8 @@ export default function MemeCompetitions({ userPets }: MemeCompetitionsProps) {
                         className="rounded-full"
                       />
                       <div>
-                        <div className="font-bold">{selectedPet.name}</div>
-                        <div className="text-sm text-gray-600">{selectedPet.memecoin.symbol} Pet</div>
+                        <div className="font-bold text-foreground">{selectedPet.name}</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">{selectedPet.memecoin.symbol} Pet</div>
                       </div>
                     </div>
                   </div>

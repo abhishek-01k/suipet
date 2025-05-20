@@ -146,15 +146,15 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
   };
 
   return (
-    <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
+    <div className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6 mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-black">Chat with {petName}</h3>
-        <div className="bg-gray-100 px-3 py-1 rounded-full border-2 border-black">
-          <span className="text-black font-medium">Mood: {renderMoodEmoji()}</span>
+        <h3 className="text-xl font-bold text-foreground">Chat with {petName}</h3>
+        <div className="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full border-2 border-black dark:border-white">
+          <span className="text-foreground font-medium">Mood: {renderMoodEmoji()}</span>
         </div>
       </div>
       
-      <div className="border-2 border-gray-300 rounded-lg bg-gray-50 h-96 flex flex-col relative">
+      <div className="border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 h-96 flex flex-col relative">
         <div className="flex-1 overflow-y-auto p-4 max-h-80" style={{ scrollBehavior: 'smooth' }} ref={chatContainerRef} onScroll={handleScroll}>
           {messages.map((message) => (
             <div 
@@ -165,12 +165,12 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
                 className={`inline-block max-w-[80%] px-4 py-2 rounded-lg ${
                   message.sender === 'user' 
                     ? 'bg-purple-500 text-white rounded-tr-none border-2 border-purple-700' 
-                    : 'bg-white text-black rounded-tl-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]'
+                    : 'bg-white dark:bg-gray-800 text-foreground rounded-tl-none border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]'
                 }`}
               >
                 <span className="font-medium text-sm md:text-base">{message.content}</span>
               </div>
-              <div className="text-xs text-gray-600 mt-1 font-medium">
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">
                 {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
@@ -178,11 +178,11 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
           
           {isTyping && (
             <div className="text-left mb-4">
-              <div className="inline-block bg-white text-black px-4 py-2 rounded-lg rounded-tl-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
+              <div className="inline-block bg-white dark:bg-gray-800 text-foreground px-4 py-2 rounded-lg rounded-tl-none border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-700 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-700 rounded-full animate-bounce" style={{ animationDelay: '200ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-700 rounded-full animate-bounce" style={{ animationDelay: '400ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-700 dark:bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-700 dark:bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '200ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-700 dark:bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '400ms' }}></div>
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
         {showScrollButton && (
           <button
             onClick={scrollToBottom}
-            className="absolute bottom-20 right-4 bg-purple-500 text-white p-2 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:bg-purple-600 transition-all z-10"
+            className="absolute bottom-20 right-4 bg-purple-500 text-white p-2 rounded-full border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)] hover:bg-purple-600 transition-all z-10"
             title="Scroll to bottom"
           >
             ↓
@@ -203,40 +203,40 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
         )}
         
         {/* Suggested responses */}
-        <div className="px-3 py-2 border-t-2 border-gray-300 flex flex-wrap gap-2 bg-gray-100">
+        <div className="px-3 py-2 border-t-2 border-gray-300 dark:border-gray-600 flex flex-wrap gap-2 bg-gray-100 dark:bg-gray-700">
           {suggestedResponses.map((response, index) => (
             <button
               key={index}
               onClick={() => handleSendMessage(response)}
-              className="bg-white text-black text-sm border-2 border-black rounded-full px-3 py-1 hover:bg-gray-100 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] transition-all font-medium"
+              className="bg-white dark:bg-gray-800 text-foreground text-sm border-2 border-black dark:border-white rounded-full px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] transition-all font-medium"
             >
               {response}
             </button>
           ))}
         </div>
         
-        <div className="border-t-2 border-gray-300 p-3 flex bg-gray-100">
+        <div className="border-t-2 border-gray-300 dark:border-gray-600 p-3 flex bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type a message..."
-            className="flex-1 bg-white border-2 border-black rounded-lg px-3 py-2 mr-2 text-black font-medium placeholder-gray-500"
+            className="flex-1 bg-white dark:bg-gray-800 border-2 border-black dark:border-white rounded-lg px-3 py-2 mr-2 text-foreground font-medium placeholder-gray-500 dark:placeholder-gray-400"
           />
           <Button 
             onClick={() => handleSendMessage()}
             disabled={!input.trim() || isTyping}
-            className="bg-purple-500 hover:bg-purple-600 text-white font-bold border-2 border-black"
+            className="bg-purple-500 hover:bg-purple-600 text-white font-bold border-2 border-black dark:border-white"
           >
             Send
           </Button>
         </div>
       </div>
       
-      <div className="mt-3 text-sm text-gray-700 bg-gray-100 p-3 rounded-lg border-2 border-gray-300">
+      <div className="mt-3 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600">
         <p className="font-medium">
-          <strong className="text-black">Note:</strong> {petName}'s AI personality is based on its type ({petType}) and the {petMemecoin.symbol} memecoin traits.
+          <strong className="text-foreground">Note:</strong> {petName}'s AI personality is based on its type ({petType}) and the {petMemecoin.symbol} memecoin traits.
         </p>
       </div>
     </div>

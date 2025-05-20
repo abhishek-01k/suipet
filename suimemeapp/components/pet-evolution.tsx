@@ -101,23 +101,23 @@ export default function PetEvolution({
   };
   
   return (
-    <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
-      <h3 className="text-xl font-bold mb-4">Pet Evolution</h3>
+    <div className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6 mb-6">
+      <h3 className="text-xl font-bold mb-4 text-foreground">Pet Evolution</h3>
       
       <div className="flex flex-col md:flex-row gap-6">
         {/* Current Stage */}
         <div className="flex-1">
-          <div className="border-2 border-black rounded-lg p-4 bg-purple-50">
-            <h4 className="font-bold text-center mb-2">Current Stage</h4>
+          <div className="border-2 border-black dark:border-white rounded-lg p-4 bg-purple-50 dark:bg-purple-900">
+            <h4 className="font-bold text-center mb-2 text-foreground">Current Stage</h4>
             <div className="relative w-full h-48 flex items-center justify-center">
               {/* This would be a real image in production */}
-              <div className="w-32 h-32 bg-gray-200 rounded-full border-4 border-purple-400 flex items-center justify-center text-4xl">
+              <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full border-4 border-purple-400 flex items-center justify-center text-4xl">
                 {petType === 0 ? '🐕' : petType === 1 ? '🐈' : petType === 2 ? '🐟' : '🌟'}
               </div>
             </div>
             <div className="text-center mt-2">
-              <p className="font-bold">{currentEvolution.name}</p>
-              <p className="text-sm text-gray-600">Level {petLevel}</p>
+              <p className="font-bold text-foreground">{currentEvolution.name}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Level {petLevel}</p>
             </div>
           </div>
         </div>
@@ -126,15 +126,15 @@ export default function PetEvolution({
         <div className="flex-1 flex flex-col justify-center">
           {nextStage ? (
             <>
-              <h4 className="font-bold mb-2">Evolution Progress</h4>
+              <h4 className="font-bold mb-2 text-foreground">Evolution Progress</h4>
               <div className="mb-4">
-                <div className="flex justify-between text-sm mb-1">
+                <div className="flex justify-between text-sm mb-1 text-foreground">
                   <span>Level {petLevel}</span>
                   <span>Level {nextEvolution?.requiredLevel}</span>
                 </div>
                 <Progress 
                   value={(petLevel / (nextEvolution?.requiredLevel || 1)) * 100}
-                  className="h-3 border-2 border-black"
+                  className="h-3 border-2 border-black dark:border-white"
                   variant="default"
                 />
               </div>
@@ -142,21 +142,21 @@ export default function PetEvolution({
               <Button
                 onClick={handleEvolve}
                 disabled={!canEvolve || isTransacting}
-                className={`w-full ${canEvolve ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-gray-300'}`}
+                className={`w-full ${canEvolve ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-gray-300 dark:bg-gray-700'}`}
               >
                 {isTransacting ? 'Evolving...' : canEvolve ? 'Evolve Now!' : `Reach Level ${nextEvolution?.requiredLevel} to Evolve`}
               </Button>
               
               {canEvolve && (
-                <p className="text-center text-sm mt-2 text-green-600">
+                <p className="text-center text-sm mt-2 text-green-600 dark:text-green-400">
                   Your pet is ready to evolve to the next stage!
                 </p>
               )}
             </>
           ) : (
-            <div className="text-center p-6 border-2 border-gray-200 rounded-lg">
-              <p className="text-lg font-bold mb-2">Maximum Evolution Reached!</p>
-              <p className="text-gray-600">
+            <div className="text-center p-6 border-2 border-gray-200 dark:border-gray-600 rounded-lg">
+              <p className="text-lg font-bold mb-2 text-foreground">Maximum Evolution Reached!</p>
+              <p className="text-gray-600 dark:text-gray-400">
                 Your pet has reached the highest evolution stage possible.
               </p>
             </div>
@@ -166,32 +166,32 @@ export default function PetEvolution({
         {/* Next Stage */}
         {nextStage && (
           <div className="flex-1">
-            <div className={`border-2 border-black rounded-lg p-4 ${canEvolve ? 'bg-yellow-50' : 'bg-gray-50'}`}>
-              <h4 className="font-bold text-center mb-2">Next Stage</h4>
+            <div className={`border-2 border-black dark:border-white rounded-lg p-4 ${canEvolve ? 'bg-yellow-50 dark:bg-yellow-900' : 'bg-gray-50 dark:bg-gray-800'}`}>
+              <h4 className="font-bold text-center mb-2 text-foreground">Next Stage</h4>
               <div className="relative w-full h-48 flex items-center justify-center">
                 {/* This would be a real image in production */}
-                <div className={`w-32 h-32 bg-gray-200 rounded-full border-4 ${canEvolve ? 'border-yellow-400' : 'border-gray-400'} flex items-center justify-center text-4xl ${!canEvolve && 'opacity-50'}`}>
+                <div className={`w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full border-4 ${canEvolve ? 'border-yellow-400' : 'border-gray-400'} flex items-center justify-center text-4xl ${!canEvolve && 'opacity-50'}`}>
                   {petType === 0 ? '🐕' : petType === 1 ? '🐈' : petType === 2 ? '🐟' : '🌟'}
                 </div>
                 {!canEvolve && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 rounded-lg">
-                    <div className="bg-white px-2 py-1 rounded-md border-2 border-black">
-                      Locked
+                    <div className="bg-white dark:bg-gray-800 px-2 py-1 rounded-md border-2 border-black dark:border-white">
+                      <span className="text-foreground">Locked</span>
                     </div>
                   </div>
                 )}
               </div>
               <div className="text-center mt-2">
-                <p className="font-bold">{nextEvolution?.name}</p>
-                <p className="text-sm text-gray-600">Required Level: {nextEvolution?.requiredLevel}</p>
+                <p className="font-bold text-foreground">{nextEvolution?.name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Required Level: {nextEvolution?.requiredLevel}</p>
               </div>
             </div>
           </div>
         )}
       </div>
       
-      <div className="mt-4 text-sm text-gray-600 border-t-2 border-gray-200 pt-4">
-        <p><strong>Evolution Benefits:</strong></p>
+      <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 border-t-2 border-gray-200 dark:border-gray-600 pt-4">
+        <p className="text-foreground"><strong>Evolution Benefits:</strong></p>
         <ul className="list-disc pl-5 mt-1">
           <li>Increased base stats (health, happiness)</li>
           <li>New visual appearance</li>
