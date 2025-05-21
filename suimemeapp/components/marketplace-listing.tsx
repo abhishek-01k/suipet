@@ -7,8 +7,8 @@ import { Badge } from './ui/8bit/badge';
 // Pet type names
 const PET_TYPES = {
   0: "Dog",
-  1: "Cat",
-  2: "Fish",
+  1: "Fish",
+  2: "Yeti",
   3: "Custom"
 };
 
