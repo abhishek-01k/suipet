@@ -79,7 +79,7 @@ export default function CreatePet() {
   };
 
   return (
-    <main className="flex flex-col items-center">
+    <main className="flex h-full flex-col items-center">
 
       {/* Content */}
       <div className="w-full max-w-4xl mx-auto mt-24 px-4">
@@ -114,7 +114,7 @@ export default function CreatePet() {
                     <motion.div
                       key={coin.symbol}
                       whileHover={{ scale: 1.03 }}
-                      className="border-2 border-black p-4 rounded-lg cursor-pointer flex items-center gap-4"
+                      className="border-2 p-4 rounded-lg cursor-pointer flex items-center gap-4"
                       onClick={() => handleSelectMemecoin(coin)}
                     >
                       <div className="relative w-12 h-12">
@@ -184,7 +184,7 @@ export default function CreatePet() {
                               key={type.value}
                               type="button"
                               onClick={() => setPetType(type.value)}
-                              className={`p-3 border-2 ${petType === type.value ? 'border-purple-500 bg-purple-50' : 'border-gray-300'} rounded-md flex flex-col items-center`}
+                              className={`p-3 border-2 ${petType === type.value ? 'border-purple-500 bg-purple-50 dark:text-black' : 'border-gray-300'} rounded-md flex flex-col items-center`}
                             >
                               <span className="text-2xl mb-1">{type.emoji}</span>
                               <span>{type.label}</span>

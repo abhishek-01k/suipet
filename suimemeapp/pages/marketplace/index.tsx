@@ -271,7 +271,7 @@ export default function Marketplace() {
 
         {/* Filter Options */}
         <div className="mb-8">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 text-black">
             <button
               onClick={() => setFilter("all")}
               className={`px-4 py-2 rounded-full ${filter === "all" ? "bg-purple-500 text-white" : "bg-gray-200"}`}
@@ -331,52 +331,63 @@ export default function Marketplace() {
 
       {/* List Pet Modal */}
       {isListModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-lg bg-white rounded-lg px-4 py-4">
-            <CardHeader className="flex justify-end items-end p-0">
-              <SlClose size={24} color="red" />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-lg rounded-xl shadow-2xl border-0 bg-white dark:bg-gray-900">
+            <CardHeader className="flex justify-end items-end p-4">
+              <button
+                onClick={() => setIsListModalOpen(false)}
+                className="hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-full transition-colors"
+              >
+                <SlClose size={24} className="text-gray-500 dark:text-gray-400" />
+              </button>
             </CardHeader>
-            <CardContent className="">
-              <h2 className="text-2xl font-bold text-center">List your Pet</h2>
+            <CardContent className="px-6 pb-6">
+              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">List your Pet</h2>
 
               {myPets.length === 0 ? (
-                <div className="text-center py-2 flex flex-col gap-4">
+                <div className="text-center py-4 flex flex-col gap-4">
                   <div className="flex justify-center items-center">
                     <Image
                       src='/pets/sad_puppy.webp'
                       width={180}
                       height={180}
                       alt="Sad_puppy"
+                      className="rounded-lg"
                     />
                   </div>
-                  <p className="mb-4">You don't have any pets available to list.</p>
+                  <p className="mb-4 text-gray-600 dark:text-gray-300">You don't have any pets available to list.</p>
                   <Link href="/create-pet">
-                    <Button>Create a Pet</Button>
+                    <Button className="text-white">Create a Pet</Button>
                   </Link>
                 </div>
               ) : (
                 <>
                   <div className="mb-6">
-                    <label className="block mb-2 font-medium">Select Pet</label>
-                    <div className="grid grid-cols-1 gap-2">
+                    <label className="block mb-3 font-medium text-gray-700 dark:text-gray-200">Select Pet</label>
+                    <div className="grid grid-cols-1 gap-3">
                       {myPets.map((pet) => (
                         <button
                           key={pet.id}
                           type="button"
                           onClick={() => setSelectedPet(pet)}
-                          className={`p-4 border-2 ${selectedPet?.id === pet.id ? 'border-purple-500 bg-purple-50' : 'border-gray-300'} rounded-md flex items-center gap-4`}
+                          className={`p-4 border-2 rounded-lg transition-all duration-200 ${selectedPet?.id === pet.id
+                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-400'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600'
+                            }`}
                         >
-                          <div className="relative w-12 h-12">
-                            <Image
-                              src={pet.memecoin.image}
-                              alt={pet.name}
-                              fill
-                              className="object-contain"
-                            />
-                          </div>
-                          <div className="text-left">
-                            <p className="font-bold">{pet.name}</p>
-                            <p className="text-sm text-gray-600">Level {pet.level} • {pet.memecoin.symbol}</p>
+                          <div className="flex items-center gap-4">
+                            <div className="relative w-12 h-12 rounded-lg overflow-hidden">
+                              <Image
+                                src={pet.memecoin.image}
+                                alt={pet.name}
+                                fill
+                                className="object-contain"
+                              />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-bold text-gray-900 dark:text-white">{pet.name}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">Level {pet.level} • {pet.memecoin.symbol}</p>
+                            </div>
                           </div>
                         </button>
                       ))}
@@ -384,7 +395,7 @@ export default function Marketplace() {
                   </div>
 
                   <div className="mb-6">
-                    <label className="block mb-2 font-medium">Price (SUI)</label>
+                    <label className="block mb-3 font-medium text-gray-700 dark:text-gray-200">Price (SUI)</label>
                     <Input
                       type="number"
                       value={price}
@@ -393,21 +404,29 @@ export default function Marketplace() {
                       min="0.01"
                       step="0.01"
                       required
+                      className="border-gray-200 dark:border-gray-700 focus:border-purple-500 dark:focus:border-purple-400"
                     />
                   </div>
 
                   <div className="flex gap-4">
-                    <Button onClick={handleListPet} disabled={!selectedPet || !price || isLoading} className="flex-1">
+                    <Button
+                      onClick={handleListPet}
+                      disabled={!selectedPet || !price || isLoading}
+                      className="flex-1  hover:bg-purple-700 text-white disabled:opacity-50"
+                    >
                       {isLoading ? "Listing..." : "List Pet"}
                     </Button>
-                    <Button onClick={() => setIsListModalOpen(false)} variant="outline" className="flex-1">
+                    <Button
+                      onClick={() => setIsListModalOpen(false)}
+                      variant="outline"
+                      className="flex-1 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >
                       Cancel
                     </Button>
                   </div>
                 </>
               )}
             </CardContent>
-
           </Card>
         </div>
       )}

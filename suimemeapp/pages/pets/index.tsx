@@ -35,10 +35,18 @@ const PET_TYPES = {
 
 // Empty state component with 8bitcn styling
 const EmptyPetsState = () => (
-  <div className="flex flex-col items-center justify-center h-64 p-8 text-center border-4 border-black rounded-lg shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-purple-100">
-    <Image src="/sample/empty-pet.png" width={100} height={100} alt="No pets" className="mb-4" />
-    <h3 className="text-xl font-bold mb-2">No Pets Found</h3>
-    <p className="mb-4 text-gray-600">You don't have any MemePets yet. Create your first one!</p>
+  <div className="flex flex-col gap-4 items-center justify-center p-8 text-center border-4 border-black dark:border-white rounded-lg shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-purple-100 dark:bg-purple-900">
+    <div className="flex justify-center items-center">
+      <Image
+        src='/pets/sad_puppy.webp'
+        width={180}
+        height={180}
+        alt="Sad_puppy"
+        className="rounded-lg"
+      />
+    </div>
+    <h3 className="text-xl font-bold mb-2 dark:text-white">No Pets Found</h3>
+    <p className="mb-4 text-gray-600 dark:text-gray-300 text-left">Create your first one!</p>
     <Link href="/create-pet">
       <Button>Create a Pet</Button>
     </Link>
@@ -225,10 +233,10 @@ export default function MyPets() {
   };
 
   return (
-    <div className="container min-h-full mx-auto py-6">
+    <div className="container min-h-full mx-auto py-24">
       <div className="flex flex-col items-start mb-8">
-        <h1 className="text-4xl font-bold">My MemePets</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-4xl font-bold dark:text-white">My MemePets</h1>
+        <p className="text-gray-600 dark:text-gray-300 mt-2">
           Train, play, and send your virtual pets on missions!
         </p>
       </div>
@@ -236,19 +244,19 @@ export default function MyPets() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Pet List */}
         <div className="lg:col-span-1">
-          <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Your Pets</h2>
-              <Link href="/create-pet">
+          <div className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6 mb-6">
+            <div className="flex flex-col gap-4 justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold dark:text-white">Your Pets</h2>
+              {pets.length !== 0 && <Link href="/create-pet">
                 <Button size="sm">+ New Pet</Button>
-              </Link>
+              </Link>}
             </div>
 
             {loading ? (
               // Loading Skeleton with 8bitcn styling
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="border-2 border-gray-200 rounded-lg p-4">
+                  <div key={i} className="border-2 border-gray-200 dark:border-gray-600 rounded-lg p-4">
                     <div className="flex items-center">
                       <Skeleton className="h-12 w-12 rounded-full mr-3" />
                       <div className="space-y-2">
@@ -269,8 +277,8 @@ export default function MyPets() {
                     className={`
                       border-4 p-3 rounded-lg cursor-pointer transition-all duration-200 
                       ${selectedPet?.id === pet.id
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-400'}
+                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/50'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-400'}
                     `}
                     onClick={() => setSelectedPet(pet)}
                     whileHover={{ scale: 1.02 }}
@@ -283,17 +291,17 @@ export default function MyPets() {
                           alt={pet.name}
                           width={48}
                           height={48}
-                          className="rounded-full object-cover border-2 border-black"
+                          className="rounded-full object-cover border-2 border-black dark:border-white"
                         />
                         {pet.onMission && (
-                          <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold px-1 rounded-full border-2 border-black">
+                          <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold px-1 rounded-full border-2 border-black dark:border-white">
                             🚀
                           </div>
                         )}
                       </div>
                       <div>
-                        <h3 className="font-bold">{pet.name}</h3>
-                        <div className="flex items-center text-xs text-gray-600">
+                        <h3 className="font-bold dark:text-white">{pet.name}</h3>
+                        <div className="flex items-center text-xs text-gray-600 dark:text-gray-300">
                           <span className="mr-2">Lvl {pet.level}</span>
                           <span className="mr-2">•</span>
                           <span>{PET_TYPES[pet.type as keyof typeof PET_TYPES]}</span>
@@ -311,7 +319,7 @@ export default function MyPets() {
         <div className="lg:col-span-2">
           {selectedPet ? (
             <div>
-              <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
+              <div className="bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-6 mb-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center">
                   <div className="relative w-24 h-24 mb-4 sm:mb-0 sm:mr-6">
                     <Image
@@ -319,62 +327,62 @@ export default function MyPets() {
                       alt={selectedPet.name}
                       width={96}
                       height={96}
-                      className="rounded-lg object-cover border-4 border-black"
+                      className="rounded-lg object-cover border-4 border-black dark:border-white"
                     />
-                    <Badge variant="outline" className="absolute -top-2 -right-2 bg-white border-2 border-black">
+                    <Badge variant="outline" className="absolute -top-2 -right-2 bg-white dark:bg-gray-800 border-2 border-black dark:border-white">
                       {selectedPet.memecoin.symbol}
                     </Badge>
                   </div>
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center mb-1">
-                      <h2 className="text-3xl font-bold mr-2">{selectedPet.name}</h2>
+                      <h2 className="text-3xl font-bold mr-2 dark:text-white">{selectedPet.name}</h2>
                       <Badge
                         className={`
-                          ${selectedPet.type === 0 ? 'bg-yellow-400' :
-                            selectedPet.type === 1 ? 'bg-blue-400' :
-                              selectedPet.type === 2 ? 'bg-green-400' : 'bg-purple-400'} 
-                          border-2 border-black
+                          ${selectedPet.type === 0 ? 'bg-yellow-400 dark:bg-yellow-600' :
+                            selectedPet.type === 1 ? 'bg-blue-400 dark:bg-blue-600' :
+                              selectedPet.type === 2 ? 'bg-green-400 dark:bg-green-600' : 'bg-purple-400 dark:bg-purple-600'} 
+                          border-2 border-black dark:border-white
                         `}
                       >
                         {PET_TYPES[selectedPet.type as keyof typeof PET_TYPES]}
                       </Badge>
                     </div>
-                    <div className="text-sm text-gray-600 mb-4">
+                    <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                       Level {selectedPet.level} MemePet •
                       Created from {selectedPet.memecoin.name} memecoin
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <div className="flex justify-between text-sm font-medium mb-1">
+                        <div className="flex justify-between text-sm font-medium mb-1 dark:text-white">
                           <span>Experience</span>
                           <span>{selectedPet.experience}/{selectedPet.level * 100}</span>
                         </div>
                         <Progress
                           value={(selectedPet.experience / (selectedPet.level * 100)) * 100}
-                          className="h-3 border-2 border-black"
+                          className="h-3 border-2 border-black dark:border-white"
                           variant="default"
                         />
                       </div>
                       <div>
-                        <div className="flex justify-between text-sm font-medium mb-1">
+                        <div className="flex justify-between text-sm font-medium mb-1 dark:text-white">
                           <span>Health</span>
                           <span>{selectedPet.health}/100</span>
                         </div>
                         <Progress
                           value={selectedPet.health}
-                          className="h-3 border-2 border-black"
+                          className="h-3 border-2 border-black dark:border-white"
                           variant="default"
                         />
                       </div>
                       <div>
-                        <div className="flex justify-between text-sm font-medium mb-1">
+                        <div className="flex justify-between text-sm font-medium mb-1 dark:text-white">
                           <span>Happiness</span>
                           <span>{selectedPet.happiness}/100</span>
                         </div>
                         <Progress
                           value={selectedPet.happiness}
-                          className="h-3 border-2 border-black"
+                          className="h-3 border-2 border-black dark:border-white"
                           variant="default"
                         />
                       </div>
@@ -384,7 +392,7 @@ export default function MyPets() {
               </div>
 
               <Tabs defaultValue="interact" className="mb-6">
-                <TabsList className="mb-4 border-4 border-black">
+                <TabsList className="mb-4 border-4 border-black dark:border-white">
                   <TabsTrigger value="interact">Interact</TabsTrigger>
                   <TabsTrigger value="missions">Missions</TabsTrigger>
                   <TabsTrigger value="evolution">Evolution</TabsTrigger>
@@ -447,10 +455,18 @@ export default function MyPets() {
               </Tabs>
             </div>
           ) : (
-            <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-8 text-center">
-              <Image src="/sample/select-pet.png" width={150} height={150} alt="Select a pet" className="mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-2">Select a Pet</h3>
-              <p className="text-gray-600">
+            <div className="flex flex-col gap-4 bg-white dark:bg-gray-800 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-lg p-8 text-center">
+              <div className="flex justify-center items-center">
+                <Image
+                  src='/pets/select_pet.webp'
+                  width={180}
+                  height={180}
+                  alt="Sad_puppy"
+                  className="rounded-lg"
+                />
+              </div>
+              <h3 className="text-xl font-bold mb-2 dark:text-white">Select a Pet</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Choose one of your pets from the list to view details and interact with them.
               </p>
             </div>

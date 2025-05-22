@@ -11,7 +11,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center">
 
       {/* Hero Section */}
-      <section className="w-full py-20 flex flex-col items-center justify-center bg-gradient-to-b from-primary/20 via-primary/10 to-transparent dark:from-primary/10 dark:via-primary/5 dark:to-transparent text-foreground relative">
+      <section className="w-full py-28 flex flex-col items-center justify-center bg-gradient-to-b from-primary/20 via-primary/10 to-transparent dark:from-primary/10 dark:via-primary/5 dark:to-transparent text-foreground relative">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent dark:from-primary/10 dark:via-transparent dark:to-transparent"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -21,8 +21,17 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="text-center lg:text-left lg:w-1/2"
             >
-              <h1 className={`text-3xl font-bold mb-6`}>Turn Your Memecoins into Virtual Pets!</h1>
-              <p className={`text-xl mb-8 text-muted-foreground`}>Create, train, and trade AI-powered virtual pets based on your favorite memecoins on the Sui blockchain.</p>
+
+              <h1 className="text-5xl sm:text-6xl font-bold text-white mb-6 leading-tight">
+                <span className="inline-block transform -rotate-2 bg-black text-white dark:text-black dark:bg-white px-4 py-2 mb-2">MemePet</span>
+                <br />
+                <span className="text-black dark:text-white">Virtual Pets on</span>
+                <br />
+                <span className="inline-block transform rotate-1 bg-[#29a9ff] text-black px-4 py-2">SUI</span>
+              </h1>
+
+              <p className="text-xl text-white mb-8 border-l-4 border-black pl-4 bg-black/20 p-4 rounded-tr-lg">
+                Create, train, and trade AI-powered virtual pets based on your favorite memecoins on the Sui blockchain              </p>
 
               <div className="flex gap-8 justify-center lg:justify-start">
                 <Link href="/create-pet" >
@@ -32,6 +41,8 @@ export default function Home() {
                   <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors">Browse Marketplace</Button>
                 </Link>
               </div>
+
+
             </motion.div>
 
             <motion.div
