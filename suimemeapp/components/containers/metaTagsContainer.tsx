@@ -7,7 +7,7 @@ const MetaTagsContainer = () => {
   //Set your product name, description, twitter account, and metadata image path
   const name = "Sui Pets";
   const description = "Transform memecoins into virtual pets with AI personality";
-  const twitterAccount = "@yourTwitterAccount";
+  const twitterAccount = "@kamalbuilds";
   const metadataImagePath = `http://localhost:3000${MetaThumbnail.src}`;
   const pathname = router.pathname;
   const page = pathname.split("/")[1] ?? "";
