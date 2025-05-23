@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ConnectButton, useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -12,6 +12,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { SUPPORTED_MEMECOINS, Memecoin } from "@/constants/memecoins";
 import { createPetTransaction } from "@/lib/contractInteraction";
 import { useWallet } from "@/hooks/useWallet";
+import { logTransaction, logError, logSuccess } from "@/lib/debug";
+import { testCreatePetTransaction, logTransactionStructure } from "@/lib/testContract";
 
 // Pet types
 const PET_TYPES = [
@@ -31,48 +33,70 @@ export default function CreatePet() {
   const account = useCurrentAccount();
   const { executeTransaction, isTransacting, error } = useWallet();
 
+  // Check environment on mount
+  useEffect(() => {
+    import('@/lib/environmentCheck').then(({ checkEnvironment }) => {
+      checkEnvironment();
+    });
+  }, []);
+
   const handleSelectMemecoin = (memecoin: Memecoin) => {
     setSelectedMemecoin(memecoin);
     setPetType(memecoin.petType); // Set default pet type based on memecoin
     setStep(2);
   };
 
-  const suiClient = useSuiClient();
-  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!account || !selectedMemecoin) return;
+    if (!account || !selectedMemecoin) {
+      toast.error("Please connect wallet and select a memecoin");
+      return;
+    }
+
+    if (!petName.trim()) {
+      toast.error("Please enter a pet name");
+      return;
+    }
 
     setIsCreating(true);
 
     try {
+      // Test transaction creation first
+      console.log("🧪 Testing transaction creation...");
+      const testResult = testCreatePetTransaction();
+      if (!testResult) {
+        throw new Error("Transaction test failed - check console for details");
+      }
+
       // Create pet transaction using the real contract interaction
       const tx = createPetTransaction({
-        name: petName,
+        name: petName.trim(),
         petType: petType,
         memecoinAddress: selectedMemecoin.address,
         imageUrl: selectedMemecoin.image,
         paymentAmount: 0.1 // 0.1 SUI fee
       });
 
-      console.log("tx params>>>", tx);
+      logTransaction("Creating pet transaction", tx);
+      logTransactionStructure(tx);
 
       // Execute the transaction using our custom hook
       const result = await executeTransaction(tx);
 
       if (result) {
-        console.log("Transaction successful:", result);
+        logSuccess("Pet creation", result);
         toast.success("Pet created successfully!");
         setStep(3);
       } else {
         // If executeTransaction returned null, there was an error
+        logError("Pet creation", { message: error || "Unknown error" });
         toast.error(error || "Failed to create pet. Please try again.");
       }
     } catch (error) {
-      console.error("Error creating pet:", error);
-      toast.error("Failed to create pet. Please try again.",);
+      logError("Pet creation exception", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Failed to create pet: ${errorMessage}`);
     } finally {
       setIsCreating(false);
     }

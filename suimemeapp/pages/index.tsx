@@ -38,7 +38,7 @@ export default function Home() {
                   <Button>Create Pet</Button>
                 </Link>
                 <Link href="/marketplace">
-                  <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors">Browse Marketplace</Button>
+                  <Button>Browse Marketplace</Button>
                 </Link>
               </div>
 

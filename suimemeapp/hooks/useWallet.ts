@@ -1,16 +1,18 @@
-import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSuiClient, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useCallback, useState } from "react";
-import { SuiTransactionBlockResponse } from "@mysten/sui.js/client";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { SuiTransactionBlockResponse } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions";
 
 export function useWallet() {
   const currentAccount = useCurrentAccount();
   const suiClient = useSuiClient();
   const [isTransacting, setIsTransacting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
 
   const executeTransaction = useCallback(
-    async (txb: TransactionBlock): Promise<SuiTransactionBlockResponse | null> => {
+    async (txb: Transaction): Promise<SuiTransactionBlockResponse | null> => {
       if (!currentAccount) {
         setError("Wallet not connected");
         return null;
@@ -19,36 +21,46 @@ export function useWallet() {
       setIsTransacting(true);
       setError(null);
 
-      try {
-        // Execute the transaction using the connected wallet
-        const result = await suiClient.executeTransactionBlock({
-          transactionBlock: txb,
-          requestType: "WaitForLocalExecution",
-          options: {
-            showEffects: true,
-            showEvents: true,
+      return new Promise((resolve) => {
+        signAndExecuteTransaction(
+          {
+            transaction: txb,
           },
-        });
+          {
+            onSuccess: async (result) => {
+              try {
+                // Wait for the transaction to be processed
+                const finalResult = await suiClient.waitForTransaction({
+                  digest: result.digest,
+                  options: {
+                    showEffects: true,
+                    showEvents: true,
+                    showInput: true,
+                    showObjectChanges: true,
+                  },
+                });
 
-        // Check if transaction was successful
-        const success = result.effects?.status?.status === "success";
-        
-        if (!success) {
-          const errorMessage = result.effects?.status?.error || "Transaction failed";
-          throw new Error(errorMessage);
-        }
-
-        console.log("Transaction successful:", result);
-        return result;
-      } catch (err) {
-        console.error("Transaction error:", err);
-        setError(err instanceof Error ? err.message : "Unknown error");
-        return null;
-      } finally {
-        setIsTransacting(false);
-      }
+                console.log("Transaction successful:", finalResult);
+                setIsTransacting(false);
+                resolve(finalResult);
+              } catch (err) {
+                console.error("Error waiting for transaction:", err);
+                setError(err instanceof Error ? err.message : "Unknown error");
+                setIsTransacting(false);
+                resolve(null);
+              }
+            },
+            onError: (err) => {
+              console.error("Transaction error:", err);
+              setError(err.message || "Transaction failed");
+              setIsTransacting(false);
+              resolve(null);
+            },
+          }
+        );
+      });
     },
-    [currentAccount, suiClient]
+    [currentAccount, suiClient, signAndExecuteTransaction]
   );
 
   return {
