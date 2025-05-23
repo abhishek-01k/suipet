@@ -36,11 +36,11 @@ function Progress({ ...props }: BitProgressProps) {
   const { className, font } = props
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div className={cn("relative w-full overflow-hidden", className)}>
       <ProgressPrimitive.Root
         data-slot="progress"
         className={cn(
-          "bg-primary/20 relative h-2 w-full overflow-hidden",
+          "bg-primary/20 relative h-2 w-full overflow-hidden rounded-none",
           font !== "normal" && pressStart.className,
           className
         )}
@@ -49,7 +49,7 @@ function Progress({ ...props }: BitProgressProps) {
         <ProgressPrimitive.Indicator
           data-slot="progress-indicator"
           className={cn(
-            "h-full transition-all",
+            "h-full transition-all overflow-hidden",
             props.variant === "retro" ? "flex" : "bg-primary w-full flex-1"
           )}
           style={
@@ -59,7 +59,7 @@ function Progress({ ...props }: BitProgressProps) {
           }
         >
           {props.variant === "retro" && (
-            <div className="flex w-full">
+            <div className="flex w-full overflow-hidden">
               {Array.from({ length: 20 }).map((_, i) => {
                 const filledSquares = Math.round(
                   ((props.value || 0) / 100) * 20
@@ -68,7 +68,7 @@ function Progress({ ...props }: BitProgressProps) {
                   <div
                     key={i}
                     className={cn(
-                      "size-2 mx-[1px] w-full",
+                      "size-2 mx-[1px] w-full flex-shrink-0",
                       i < filledSquares ? "bg-primary" : "bg-transparent"
                     )}
                   />
@@ -80,12 +80,12 @@ function Progress({ ...props }: BitProgressProps) {
       </ProgressPrimitive.Root>
 
       <div
-        className="absolute inset-0 border-y-4 -my-1 border-foreground dark:border-ring pointer-events-none"
+        className="absolute inset-0 border-y-2 -my-1 border-foreground dark:border-ring pointer-events-none"
         aria-hidden="true"
       />
 
       <div
-        className="absolute inset-0 border-x-4 -mx-1 border-foreground dark:border-ring pointer-events-none"
+        className="absolute inset-0 border-x-2 -mx-1 border-foreground dark:border-ring pointer-events-none"
         aria-hidden="true"
       />
     </div>

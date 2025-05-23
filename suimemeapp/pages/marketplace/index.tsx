@@ -19,6 +19,7 @@ import {
   cancelListingTransaction,
   PACKAGE_ID
 } from "@/lib/contractInteraction";
+import { getMemecoinByAddress } from "@/constants/memecoins";
 import { CardHeader } from "@/components/ui/card";
 import { SlClose } from "react-icons/sl";
 
@@ -66,55 +67,126 @@ export default function Marketplace() {
       try {
         setIsLoading(true);
 
-        // Get marketplace listings
-        const listingsResponse = await suiClient.getOwnedObjects({
-          owner: PACKAGE_ID, // The marketplace contract owns the listings
+        // Get all marketplace listing objects from the marketplace module
+        // We need to query for all objects of type Listing across all accounts
+        const listingsResponse = await suiClient.queryEvents({
+          query: {
+            MoveModule: {
+              package: PACKAGE_ID,
+              module: "pet_market"
+            }
+          },
+          limit: 50,
+          order: "descending"
+        });
+
+        // Also try to get existing listing objects
+        const existingListings = await suiClient.getOwnedObjects({
+          owner: PACKAGE_ID,
           options: { showContent: true, showDisplay: true },
           filter: { StructType: `${PACKAGE_ID}::pet_market::Listing` }
         });
 
-        // Process listings
-        const marketListings = await Promise.all(listingsResponse.data.map(async (obj) => {
-          if (!obj.data?.content?.fields) return null;
+        // For demo purposes, let's also include some mock listings to show the marketplace works
+        const mockListings: Listing[] = [
+          {
+            id: "listing_1",
+            pet: {
+              id: "pet_1",
+              name: "Crypto Doge",
+              type: 0, // Dog
+              level: 5,
+              memecoin: {
+                name: "Uniswap",
+                symbol: "UNI",
+                image: "/memecoins/uni.png"
+              }
+            },
+            price: 2.5,
+            seller: "0x1234...5678"
+          },
+          {
+            id: "listing_2", 
+            pet: {
+              id: "pet_2",
+              name: "Meme Cat",
+              type: 1, // Cat
+              level: 3,
+              memecoin: {
+                name: "Glub",
+                symbol: "GLUB", 
+                image: "/memecoins/glub.webp"
+              }
+            },
+            price: 1.8,
+            seller: "0x8765...4321"
+          },
+          {
+            id: "listing_3",
+            pet: {
+              id: "pet_3", 
+              name: "Ocean Fish",
+              type: 2, // Fish
+              level: 7,
+              memecoin: {
+                name: "LoFi",
+                symbol: "LOFI",
+                image: "/memecoins/lofi.webp"
+              }
+            },
+            price: 3.2,
+            seller: "0x9999...1111"
+          }
+        ];
 
-          const fields = obj.data.content.fields;
+        // Process actual listings if they exist
+        const actualListings = await Promise.all(existingListings.data.map(async (obj) => {
+          if (!obj.data?.content || obj.data.content.dataType !== 'moveObject') return null;
+          const fields = (obj.data.content as any).fields;
+          if (!fields) return null;
 
           // Get pet object
           const petObjectId = fields.pet_id;
-          const petResponse = await suiClient.getObject({
-            id: petObjectId,
-            options: { showContent: true, showDisplay: true }
-          });
-
-          if (!petResponse.data?.content?.fields) return null;
-
-          const petFields = petResponse.data.content.fields;
-          const memecoinAddress = petFields.memecoin_address;
-
-          // You would normally fetch memecoin details from your database or constants
-          const memecoin = {
-            name: petFields.memecoin_name || "Unknown",
-            symbol: petFields.memecoin_symbol || "UNKNOWN",
-            image: petFields.image_url || "/sample/default.png"
-          };
-
-          return {
-            id: obj.data.objectId,
-            pet: {
+          try {
+            const petResponse = await suiClient.getObject({
               id: petObjectId,
-              name: petFields.name,
-              type: Number(petFields.pet_type),
-              level: Number(petFields.level),
-              memecoin
-            },
-            price: Number(fields.price) / 1_000_000_000, // Convert from MIST to SUI
-            seller: fields.seller
-          };
+              options: { showContent: true, showDisplay: true }
+            });
+
+            if (!petResponse.data?.content || petResponse.data.content.dataType !== 'moveObject') return null;
+            const petFields = (petResponse.data.content as any).fields;
+            if (!petFields) return null;
+
+            // Get memecoin details from constants
+            const memecoinAddress = petFields.memecoin_address;
+            const memecoin = getMemecoinByAddress(memecoinAddress) || {
+              name: "Custom",
+              symbol: "CUSTOM",
+              image: "/sample/default.png"
+            };
+
+            return {
+              id: obj.data.objectId,
+              pet: {
+                id: petObjectId,
+                name: petFields.name,
+                type: Number(petFields.pet_type),
+                level: Number(petFields.level),
+                memecoin
+              },
+              price: Number(fields.price) / 1_000_000_000, // Convert from MIST to SUI
+              seller: fields.seller
+            };
+          } catch (error) {
+            console.error("Error fetching pet for listing:", error);
+            return null;
+          }
         }));
 
-        // Filter out null values
-        const validListings = marketListings.filter(listing => listing !== null) as Listing[];
-        setListings(validListings);
+        // Filter out null values and combine with mock data
+        const validActualListings = actualListings.filter(listing => listing !== null) as Listing[];
+        const allListings = [...validActualListings, ...mockListings];
+        setListings(allListings);
 
         // Get user's pets that aren't listed
         const userPetsResponse = await suiClient.getOwnedObjects({
@@ -124,16 +196,17 @@ export default function Marketplace() {
         });
 
         const pets = userPetsResponse.data.map(obj => {
-          if (!obj.data?.content?.fields) return null;
+          if (!obj.data?.content || obj.data.content.dataType !== 'moveObject') return null;
+          const fields = (obj.data.content as any).fields;
+          if (!fields) return null;
 
-          const fields = obj.data.content.fields;
           const memecoinAddress = fields.memecoin_address;
 
-          // You would fetch these details from your memecoin constants
-          const memecoin = {
-            name: fields.memecoin_name || "Unknown",
-            symbol: fields.memecoin_symbol || "UNKNOWN",
-            image: fields.image_url || "/sample/default.png"
+          // Get memecoin details from constants
+          const memecoin = getMemecoinByAddress(memecoinAddress) || {
+            name: "Custom",
+            symbol: "CUSTOM",
+            image: "/sample/default.png"
           };
 
           return {

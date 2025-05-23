@@ -33,7 +33,9 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
   const [isTyping, setIsTyping] = useState(false);
   const [mood, setMood] = useState<'happy' | 'neutral' | 'excited'>('neutral');
   const [suggestedResponses, setSuggestedResponses] = useState<string[]>([]);
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // Generate suggested responses based on pet personality
   useEffect(() => {
@@ -62,10 +64,34 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
     }
   }, [messages]);
 
-  // Auto-scroll to bottom of chat
+  // Smart auto-scroll: only scroll to bottom if user is already near bottom
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = chatContainerRef.current;
+    if (container) {
+      const isNearBottom = container.scrollTop >= container.scrollHeight - container.clientHeight - 100;
+      if (isNearBottom) {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        setShowScrollButton(false);
+      } else {
+        setShowScrollButton(true);
+      }
+    }
   }, [messages]);
+
+  // Handle scroll to check if user scrolled up
+  const handleScroll = () => {
+    const container = chatContainerRef.current;
+    if (container) {
+      const isNearBottom = container.scrollTop >= container.scrollHeight - container.clientHeight - 100;
+      setShowScrollButton(!isNearBottom);
+    }
+  };
+
+  // Manual scroll to bottom
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setShowScrollButton(false);
+  };
 
   // Handle sending a message
   const handleSendMessage = async (messageText: string = input) => {
@@ -122,14 +148,14 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
   return (
     <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-lg p-6 mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold">Chat with {petName}</h3>
+        <h3 className="text-xl font-bold text-black">Chat with {petName}</h3>
         <div className="bg-gray-100 px-3 py-1 rounded-full border-2 border-black">
-          Mood: {renderMoodEmoji()}
+          <span className="text-black font-medium">Mood: {renderMoodEmoji()}</span>
         </div>
       </div>
       
-      <div className="border-2 border-gray-300 rounded-lg bg-gray-50 h-64 flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4">
+      <div className="border-2 border-gray-300 rounded-lg bg-gray-50 h-96 flex flex-col relative">
+        <div className="flex-1 overflow-y-auto p-4 max-h-80" style={{ scrollBehavior: 'smooth' }} ref={chatContainerRef} onScroll={handleScroll}>
           {messages.map((message) => (
             <div 
               key={message.id} 
@@ -138,13 +164,13 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
               <div 
                 className={`inline-block max-w-[80%] px-4 py-2 rounded-lg ${
                   message.sender === 'user' 
-                    ? 'bg-purple-500 text-white rounded-tr-none' 
-                    : 'bg-gray-200 text-gray-800 rounded-tl-none border-2 border-black'
+                    ? 'bg-purple-500 text-white rounded-tr-none border-2 border-purple-700' 
+                    : 'bg-white text-black rounded-tl-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]'
                 }`}
               >
-                {message.content}
+                <span className="font-medium text-sm md:text-base">{message.content}</span>
               </div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-600 mt-1 font-medium">
                 {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
@@ -152,11 +178,11 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
           
           {isTyping && (
             <div className="text-left mb-4">
-              <div className="inline-block bg-gray-200 text-gray-800 px-4 py-2 rounded-lg rounded-tl-none border-2 border-black">
+              <div className="inline-block bg-white text-black px-4 py-2 rounded-lg rounded-tl-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '200ms' }}></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '400ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-700 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-700 rounded-full animate-bounce" style={{ animationDelay: '200ms' }}></div>
+                  <div className="w-2 h-2 bg-gray-700 rounded-full animate-bounce" style={{ animationDelay: '400ms' }}></div>
                 </div>
               </div>
             </div>
@@ -164,41 +190,53 @@ export default function PetChat({ petId, petName, petType, petMemecoin }: PetCha
           
           <div ref={chatEndRef} />
         </div>
+
+        {/* Scroll to bottom button */}
+        {showScrollButton && (
+          <button
+            onClick={scrollToBottom}
+            className="absolute bottom-20 right-4 bg-purple-500 text-white p-2 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:bg-purple-600 transition-all z-10"
+            title="Scroll to bottom"
+          >
+            ↓
+          </button>
+        )}
         
         {/* Suggested responses */}
-        <div className="px-3 py-2 border-t-2 border-gray-300 flex flex-wrap gap-2">
+        <div className="px-3 py-2 border-t-2 border-gray-300 flex flex-wrap gap-2 bg-gray-100">
           {suggestedResponses.map((response, index) => (
             <button
               key={index}
               onClick={() => handleSendMessage(response)}
-              className="bg-gray-100 text-sm border-2 border-gray-300 rounded-full px-3 py-1 hover:bg-gray-200 hover:border-gray-400"
+              className="bg-white text-black text-sm border-2 border-black rounded-full px-3 py-1 hover:bg-gray-100 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] transition-all font-medium"
             >
               {response}
             </button>
           ))}
         </div>
         
-        <div className="border-t-2 border-gray-300 p-3 flex">
+        <div className="border-t-2 border-gray-300 p-3 flex bg-gray-100">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type a message..."
-            className="flex-1 bg-white border-2 border-black rounded-lg px-3 py-2 mr-2"
+            className="flex-1 bg-white border-2 border-black rounded-lg px-3 py-2 mr-2 text-black font-medium placeholder-gray-500"
           />
           <Button 
             onClick={() => handleSendMessage()}
             disabled={!input.trim() || isTyping}
+            className="bg-purple-500 hover:bg-purple-600 text-white font-bold border-2 border-black"
           >
             Send
           </Button>
         </div>
       </div>
       
-      <div className="mt-3 text-sm text-gray-600">
-        <p>
-          <strong>Note:</strong> {petName}'s AI personality is based on its type ({petType}) and the {petMemecoin.symbol} memecoin traits.
+      <div className="mt-3 text-sm text-gray-700 bg-gray-100 p-3 rounded-lg border-2 border-gray-300">
+        <p className="font-medium">
+          <strong className="text-black">Note:</strong> {petName}'s AI personality is based on its type ({petType}) and the {petMemecoin.symbol} memecoin traits.
         </p>
       </div>
     </div>

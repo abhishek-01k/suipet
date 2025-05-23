@@ -50,7 +50,7 @@ class ExerciseDetectionService {
   private lastVideoTime = -1;
   private currentExercise: Exercise | null = null;
 
-  // “Going up” state logic
+  // "Going up" state logic
   private isGoingUp = false;
 
   // Overall rep count
@@ -110,11 +110,11 @@ class ExerciseDetectionService {
     const { start, end } = this.currentExercise.targetAngles;
     const now = Date.now();
 
-    // “Going down” logic => if not going up yet, and angle < end => user at low position
+    // "Going down" logic => if not going up yet, and angle < end => user at low position
     if (!this.isGoingUp && angle <= end) {
       this.isGoingUp = true;
     }
-    // “Coming up” logic => if going up, angle >= start => user returned to high position => count rep
+    // "Coming up" logic => if going up, angle >= start => user returned to high position => count rep
     else if (this.isGoingUp && angle >= start) {
       this.isGoingUp = false;
 
@@ -175,7 +175,7 @@ class ExerciseDetectionService {
         });
         this.drawingUtils.drawConnectors(landmarks, PoseLandmarker.POSE_CONNECTIONS);
 
-        // Color for the main angle’s joint circles
+        // Color for the main angle's joint circles
         const color = this.isGoingUp ? "#00ff00" : "#ff0000";
         ctx.beginPath();
         ctx.arc(landmarks[p1].x * canvasElement.width, landmarks[p1].y * canvasElement.height, 8, 0, 2 * Math.PI);
@@ -244,9 +244,10 @@ class ExerciseDetectionService {
  * ----------------------------------------------------------------------- */
 interface LiveDetectionProps {
   exerciseSubType: string; // e.g. "bicep-curl", "squat", "pushup"
+  onExerciseComplete?: (repsCompleted: number, targetReps: number) => void;
 }
 
-export default function LiveDetection({ exerciseSubType }: LiveDetectionProps) {
+export default function LiveDetection({ exerciseSubType, onExerciseComplete }: LiveDetectionProps) {
   // Mode: "live" or "upload"
   const [mode, setMode] = useState<"live" | "upload">("live");
 
@@ -447,6 +448,13 @@ export default function LiveDetection({ exerciseSubType }: LiveDetectionProps) {
     alert("Uploaded video submitted!");
     // Reset state after submission if needed
   }
+
+  // Check if exercise is completed and call callback
+  useEffect(() => {
+    if (repCount >= targetReps && onExerciseComplete) {
+      onExerciseComplete(repCount, targetReps);
+    }
+  }, [repCount, targetReps, onExerciseComplete]);
 
   return (
     <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg">

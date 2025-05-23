@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/8bit/badge";
 import { Skeleton } from "@/components/ui/8bit/skeleton";
 import { PACKAGE_ID } from "@/lib/contractInteraction";
 import { getMemecoinByAddress } from "@/constants/memecoins";
+import MemeCompetitions from '@/components/meme-competitions';
 
 // Pet type helper
 const PET_TYPES = {
@@ -397,6 +398,7 @@ export default function MyPets() {
                   <TabsTrigger value="missions">Missions</TabsTrigger>
                   <TabsTrigger value="evolution">Evolution</TabsTrigger>
                   <TabsTrigger value="chat">AI Chat</TabsTrigger>
+                  <TabsTrigger value="competitions">Competitions</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="interact">
@@ -450,6 +452,12 @@ export default function MyPets() {
                     petName={selectedPet.name}
                     petType={selectedPet.type}
                     petMemecoin={selectedPet.memecoin}
+                  />
+                </TabsContent>
+
+                <TabsContent value="competitions">
+                  <MemeCompetitions
+                    userPets={pets}
                   />
                 </TabsContent>
               </Tabs>
