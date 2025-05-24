@@ -1,4 +1,4 @@
-# MemePet - Virtual Pets on Sui Blockchain
+d# MemePet - Virtual Pets on Sui Blockchain
 
 MemePet is a decentralized application (dApp) on the Sui blockchain that transforms memecoins into virtual pets with AI-powered personalities. Users can create, train, interact with, and trade their MemePets in a gamified ecosystem.
 
@@ -18,6 +18,9 @@ MemePet is a decentralized application (dApp) on the Sui blockchain that transfo
 - 🔐 **Sui Blockchain Integration**: Secure ownership and transparent transactions
 - 👛 **Wallet Connection**: Seamless integration with Sui wallets
 - 🎨 **NeoBrutalism Design**: Bold, playful aesthetics with sharp edges and vibrant colors
+
+## Demo Video
+
 
 ## Project Structure
 
